@@ -20,11 +20,11 @@
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
     <ProgFlashFromRam>true</ProgFlashFromRam>
-    <RamSnippetAddress />
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
     <UncachedRange />
-    <OverrideVtorValue />
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
     <BootSegment>2</BootSegment>
-    <eraseonlaunchrule>1</eraseonlaunchrule>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
     <AsfFrameworkConfig>
       <framework-data>
   <options>
@@ -34,15 +34,36 @@
     <option id="common.utils.stdio.stdio_serial" value="Add" config="" content-id="Atmel.ASF" />
     <option id="sam.components.ethernet_phy.ksz8081mnx" value="Add" config="" content-id="Atmel.ASF" />
     <option id="sam.drivers.gmac" value="Add" config="" content-id="Atmel.ASF" />
-    <option id="sam.drivers.gmac.gmac_example" value="Add" config="ksz8081mnx" content-id="Atmel.ASF" />
     <option id="sam.drivers.pmc" value="Add" config="" content-id="Atmel.ASF" />
     <option id="sam.drivers.uart" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.services.delay" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.services.flash" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.gpbr" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.rstc" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.rtt" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.services.basic.spi_master" value="Add" config="standard_spi" content-id="Atmel.ASF" />
+    <option id="sam.drivers.tc.appnote" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.wdt" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.usart" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.services.basic.serial" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.twi" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.services.basic.twi" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.tc" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.spi" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.pio" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.components.memory.nand_flash" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.efc" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="sam.drivers.gmac.gmac_example" value="Add" config="ksz8081mnx" content-id="Atmel.ASF" />
     <option id="sam.utils.cmsis.sam4e.source.template" value="Add" config="" content-id="Atmel.ASF" />
     <option id="sam.utils.syscalls" value="Add" config="" content-id="Atmel.ASF" />
   </options>
   <configurations>
     <configuration key="config.compiler.iarewarm.debugger.driver" value="cmsisdap" default="cmsisdap" content-id="Atmel.ASF" />
     <configuration key="config.sam.drivers.gmac.gmac_example" value="ksz8081mnx" default="ksz8081mnx" content-id="Atmel.ASF" />
+    <configuration key="config.compiler.armgcc.fpu_used" value="yes" default="yes" content-id="Atmel.ASF" />
+    <configuration key="config.compiler.armgcc.printf" value="iprintf" default="iprintf" content-id="Atmel.ASF" />
+    <configuration key="config.compiler.armgcc.scanf" value="iscanf" default="iscanf" content-id="Atmel.ASF" />
+    <configuration key="config.sam.pio.pio_handler" value="yes" default="yes" content-id="Atmel.ASF" />
   </configurations>
   <files>
     <file path="src/ASF/common/boards/board.h" framework="" version="" source="common/boards/board.h" changed="False" content-id="Atmel.ASF" />
@@ -76,7 +97,7 @@
     <file path="src/ASF/sam/drivers/gmac/gmac.h" framework="" version="" source="sam/drivers/gmac/gmac.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/gmac_example.c" framework="" version="" source="sam/drivers/gmac/gmac_example/gmac_example.c" changed="False" content-id="Atmel.ASF" />
     <file path="src/mini_ip.h" framework="" version="" source="sam/drivers/gmac/gmac_example/mini_ip.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/config/conf_board.h" framework="" version="" source="sam/drivers/gmac/gmac_example/sam4e16e_sam4e_xplained_pro/conf_board.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/Config/conf_board.h" framework="" version="3.27.0" source="sam\drivers\tc\tc_capture_waveform_example\sam4e16e_sam4e_ek\conf_board.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/config/conf_clock.h" framework="" version="" source="sam/drivers/gmac/gmac_example/sam4e16e_sam4e_xplained_pro/conf_clock.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/config/conf_eth.h" framework="" version="" source="sam/drivers/gmac/gmac_example/sam4e16e_sam4e_xplained_pro/conf_eth.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/config/conf_uart_serial.h" framework="" version="" source="sam/drivers/gmac/gmac_example/sam4e16e_sam4e_xplained_pro/conf_uart_serial.h" changed="False" content-id="Atmel.ASF" />
@@ -200,6 +221,67 @@
     <file path="src/ASF/thirdparty/CMSIS/Lib/license.txt" framework="" version="" source="thirdparty/CMSIS/Lib/license.txt" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/thirdparty/CMSIS/README.txt" framework="" version="" source="thirdparty/CMSIS/README.txt" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/thirdparty/CMSIS/license.txt" framework="" version="" source="thirdparty/CMSIS/license.txt" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/storage/ctrl_access/ctrl_access.c" framework="" version="3.27.0" source="common\services\storage\ctrl_access\ctrl_access.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/storage/ctrl_access/ctrl_access.h" framework="" version="3.27.0" source="common\services\storage\ctrl_access\ctrl_access.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/Config/conf_access.h" framework="" version="3.27.0" source="common\services\storage\ctrl_access\module_config\conf_access.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/ebi/smc/smc.c" framework="" version="3.27.0" source="sam\drivers\ebi\smc\smc.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/ebi/smc/smc.h" framework="" version="3.27.0" source="sam\drivers\ebi\smc\smc.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/efc/efc.c" framework="" version="3.27.0" source="sam\drivers\efc\efc.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/efc/efc.h" framework="" version="3.27.0" source="sam\drivers\efc\efc.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/gpbr/gpbr.c" framework="" version="3.27.0" source="sam\drivers\gpbr\gpbr.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/gpbr/gpbr.h" framework="" version="3.27.0" source="sam\drivers\gpbr\gpbr.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/matrix/matrix.c" framework="" version="3.27.0" source="sam\drivers\matrix\matrix.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/matrix/matrix.h" framework="" version="3.27.0" source="sam\drivers\matrix\matrix.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/pio/pio.c" framework="" version="3.27.0" source="sam\drivers\pio\pio.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/pio/pio.h" framework="" version="3.27.0" source="sam\drivers\pio\pio.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/rstc/rstc.c" framework="" version="3.27.0" source="sam\drivers\rstc\rstc.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/rstc/rstc.h" framework="" version="3.27.0" source="sam\drivers\rstc\rstc.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/rstc/example1/rstc_example1.h" framework="" version="3.27.0" source="sam\drivers\rstc\example1\rstc_example1.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/rtt/rtt.c" framework="" version="3.27.0" source="sam\drivers\rtt\rtt.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/rtt/rtt.h" framework="" version="3.27.0" source="sam\drivers\rtt\rtt.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/tc/tc.c" framework="" version="3.27.0" source="sam\drivers\tc\tc.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/tc/tc.h" framework="" version="3.27.0" source="sam\drivers\tc\tc.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/tc/tc_capture_waveform_example/tc_capture_waveform_example.h" framework="" version="3.27.0" source="sam\drivers\tc\tc_capture_waveform_example\tc_capture_waveform_example.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/services/flash_efc/flash_efc.c" framework="" version="3.27.0" source="sam\services\flash_efc\flash_efc.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/services/flash_efc/flash_efc.h" framework="" version="3.27.0" source="sam\services\flash_efc\flash_efc.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib/nand_flash_mem.c" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_mem.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_ecc_sw.c" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_ecc_sw.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_model.c" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_model.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_spare_scheme.c" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_spare_scheme.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_raw_smc.c" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_raw_smc.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_model.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_model.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_raw.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_raw.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib/nand_flash_mem.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_mem.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_common.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_common.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_ecc.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_ecc.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/nand_flash_spare_scheme.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\nand_flash_spare_scheme.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib/nand_flash_management.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_management.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib/nand_flash_translation.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_translation.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/Config/conf_nf.h" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\module_config\conf_nf.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib/gcc/lib_nand_flash_cortexm4.a" framework="" version="3.27.0" source="common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\gcc\lib_nand_flash_cortexm4.a" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/delay/sam/cycle_counter.c" framework="" version="3.27.0" source="common\services\delay\sam\cycle_counter.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/delay/sam/cycle_counter.h" framework="" version="3.27.0" source="common\services\delay\sam\cycle_counter.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/delay/delay.h" framework="" version="3.27.0" source="common\services\delay\delay.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/gpio/sam_gpio/sam_gpio.h" framework="" version="3.27.0" source="common\services\gpio\sam_gpio\sam_gpio.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/gpio/gpio.h" framework="" version="3.27.0" source="common\services\gpio\gpio.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/spi/sam_spi/spi_master.c" framework="" version="3.27.0" source="common\services\spi\sam_spi\spi_master.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/spi/sam_spi/spi_master.h" framework="" version="3.27.0" source="common\services\spi\sam_spi\spi_master.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/spi/spi_master.h" framework="" version="3.27.0" source="common\services\spi\spi_master.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/Config/conf_spi_master.h" framework="" version="3.27.0" source="common\services\spi\sam_spi\module_config\conf_spi_master.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/storage/ecc_hamming/ecc-sw.c" framework="" version="3.27.0" source="common\services\storage\ecc_hamming\ecc-sw.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/storage/ecc_hamming/ecc-sw.h" framework="" version="3.27.0" source="common\services\storage\ecc_hamming\ecc-sw.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/twi/twi_slave.h" framework="" version="3.27.0" source="common\services\twi\twi_slave.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/twi/sam_twi/twi_master.h" framework="" version="3.27.0" source="common\services\twi\sam_twi\twi_master.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/twi/twi_master.h" framework="" version="3.27.0" source="common\services\twi\twi_master.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/services/twi/sam_twi/twi_slave.h" framework="" version="3.27.0" source="common\services\twi\sam_twi\twi_slave.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/pio/pio_handler.c" framework="" version="3.27.0" source="sam\drivers\pio\pio_handler.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/pio/pio_handler.h" framework="" version="3.27.0" source="sam\drivers\pio\pio_handler.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/spi/spi.c" framework="" version="3.27.0" source="sam\drivers\spi\spi.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/spi/spi.h" framework="" version="3.27.0" source="sam\drivers\spi\spi.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/twi/twi.c" framework="" version="3.27.0" source="sam\drivers\twi\twi.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/twi/twi.h" framework="" version="3.27.0" source="sam\drivers\twi\twi.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/wdt/wdt.c" framework="" version="3.27.0" source="sam\drivers\wdt\wdt.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/sam/drivers/wdt/wdt.h" framework="" version="3.27.0" source="sam\drivers\wdt\wdt.h" changed="False" content-id="Atmel.ASF" />
   </files>
   <documentation help="http://asf.atmel.com/docs/3.27.0/sam.drivers.gmac.gmac_example.sam4e_xplained_pro/html/index.html" />
   <offline-documentation help="" />
@@ -210,6 +292,32 @@
   <board id="board.sam4e_xplained_pro" value="Add" config="" content-id="Atmel.ASF" />
 </framework-data>
     </AsfFrameworkConfig>
+    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
+    <com_atmel_avrdbg_tool_stk500>
+      <ToolOptions>
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>
+        </InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.stk500</ToolType>
+      <ToolNumber>
+      </ToolNumber>
+      <ToolName>STK500</ToolName>
+    </com_atmel_avrdbg_tool_stk500>
+    <avrtoolinterface />
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>
+        </InterfaceName>
+      </ToolOptions>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Simulator</ToolName>
+    </com_atmel_avrdbg_tool_simulator>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -257,6 +365,27 @@
       <Value>../src/ASF/sam/drivers/usart</Value>
       <Value>../src/ASF/sam/components/ethernet_phy/ksz8081mnx</Value>
       <Value>../src/ASF/sam/drivers/uart</Value>
+      <Value>../src/ASF/common/services/storage/ctrl_access</Value>
+      <Value>../src/ASF/sam/drivers/ebi/smc</Value>
+      <Value>../src/ASF/sam/drivers/efc</Value>
+      <Value>../src/ASF/sam/drivers/gpbr</Value>
+      <Value>../src/ASF/sam/drivers/matrix</Value>
+      <Value>../src/ASF/sam/drivers/pio</Value>
+      <Value>../src/ASF/sam/drivers/rstc</Value>
+      <Value>../src/ASF/sam/drivers/rtt</Value>
+      <Value>../src/ASF/sam/drivers/tc</Value>
+      <Value>../src/ASF/sam/services/flash_efc</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib</Value>
+      <Value>../src/ASF/common/services/delay</Value>
+      <Value>../src/ASF/common/services/gpio</Value>
+      <Value>../src/ASF/common/services/spi/sam_spi</Value>
+      <Value>../src/ASF/common/services/spi</Value>
+      <Value>../src/ASF/common/services/storage/ecc_hamming</Value>
+      <Value>../src/ASF/common/services/twi</Value>
+      <Value>../src/ASF/sam/drivers/spi</Value>
+      <Value>../src/ASF/sam/drivers/twi</Value>
+      <Value>../src/ASF/sam/drivers/wdt</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize for size (-Os)</armgcc.compiler.optimization.level>
@@ -266,6 +395,7 @@
   <armgcc.compiler.miscellaneous.OtherFlags>-pipe -fno-strict-aliasing -Wall -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -std=gnu99 -ffunction-sections -fdata-sections -Wchar-subscripts -Wcomment -Wformat=2 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch -Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wundef -Wshadow -Wbad-function-cast -Wwrite-strings -Wsign-compare -Waggregate-return -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs -Wlong-long -Wunreachable-code -Wcast-align --param max-inline-insns-single=500 -mfloat-abi=softfp -mfpu=fpv4-sp-d16</armgcc.compiler.miscellaneous.OtherFlags>
   <armgcc.linker.libraries.Libraries>
     <ListValues>
+      <Value>lib_nand_flash_cortexm4</Value>
       <Value>libarm_cortexM4lf_math_softfp</Value>
       <Value>libm</Value>
     </ListValues>
@@ -274,13 +404,14 @@
     <ListValues>
       <Value>../cmsis/linkerScripts</Value>
       <Value>../src/ASF/thirdparty/CMSIS/Lib/GCC</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib/gcc</Value>
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
   <armgcc.linker.miscellaneous.LinkerFlags>-Wl,--entry=Reset_Handler -Wl,--cref -mthumb -T../src/ASF/sam/utils/linker_scripts/sam4e/sam4e16/gcc/flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
-      <Value>../src</Value>
+      <Value>../src/ASF/sam/drivers/wdt</Value>
     </ListValues>
   </armgcc.assembler.general.IncludePaths>
   <armgcc.preprocessingassembler.general.AssemblerFlags>-DARM_MATH_CM4=true -DBOARD=SAM4E_XPLAINED_PRO -D__SAM4E16E__ -Dprintf=iprintf -Dscanf=iscanf</armgcc.preprocessingassembler.general.AssemblerFlags>
@@ -312,6 +443,27 @@
       <Value>../src/ASF/sam/drivers/usart</Value>
       <Value>../src/ASF/sam/components/ethernet_phy/ksz8081mnx</Value>
       <Value>../src/ASF/sam/drivers/uart</Value>
+      <Value>../src/ASF/common/services/storage/ctrl_access</Value>
+      <Value>../src/ASF/sam/drivers/ebi/smc</Value>
+      <Value>../src/ASF/sam/drivers/efc</Value>
+      <Value>../src/ASF/sam/drivers/gpbr</Value>
+      <Value>../src/ASF/sam/drivers/matrix</Value>
+      <Value>../src/ASF/sam/drivers/pio</Value>
+      <Value>../src/ASF/sam/drivers/rstc</Value>
+      <Value>../src/ASF/sam/drivers/rtt</Value>
+      <Value>../src/ASF/sam/drivers/tc</Value>
+      <Value>../src/ASF/sam/services/flash_efc</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib</Value>
+      <Value>../src/ASF/common/services/delay</Value>
+      <Value>../src/ASF/common/services/gpio</Value>
+      <Value>../src/ASF/common/services/spi/sam_spi</Value>
+      <Value>../src/ASF/common/services/spi</Value>
+      <Value>../src/ASF/common/services/storage/ecc_hamming</Value>
+      <Value>../src/ASF/common/services/twi</Value>
+      <Value>../src/ASF/sam/drivers/spi</Value>
+      <Value>../src/ASF/sam/drivers/twi</Value>
+      <Value>../src/ASF/sam/drivers/wdt</Value>
     </ListValues>
   </armgcc.preprocessingassembler.general.IncludePaths>
 </ArmGcc>
@@ -363,6 +515,27 @@
       <Value>../src/ASF/sam/drivers/usart</Value>
       <Value>../src/ASF/sam/components/ethernet_phy/ksz8081mnx</Value>
       <Value>../src/ASF/sam/drivers/uart</Value>
+      <Value>../src/ASF/common/services/storage/ctrl_access</Value>
+      <Value>../src/ASF/sam/drivers/ebi/smc</Value>
+      <Value>../src/ASF/sam/drivers/efc</Value>
+      <Value>../src/ASF/sam/drivers/gpbr</Value>
+      <Value>../src/ASF/sam/drivers/matrix</Value>
+      <Value>../src/ASF/sam/drivers/pio</Value>
+      <Value>../src/ASF/sam/drivers/rstc</Value>
+      <Value>../src/ASF/sam/drivers/rtt</Value>
+      <Value>../src/ASF/sam/drivers/tc</Value>
+      <Value>../src/ASF/sam/services/flash_efc</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib</Value>
+      <Value>../src/ASF/common/services/delay</Value>
+      <Value>../src/ASF/common/services/gpio</Value>
+      <Value>../src/ASF/common/services/spi/sam_spi</Value>
+      <Value>../src/ASF/common/services/spi</Value>
+      <Value>../src/ASF/common/services/storage/ecc_hamming</Value>
+      <Value>../src/ASF/common/services/twi</Value>
+      <Value>../src/ASF/sam/drivers/spi</Value>
+      <Value>../src/ASF/sam/drivers/twi</Value>
+      <Value>../src/ASF/sam/drivers/wdt</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -373,6 +546,7 @@
   <armgcc.compiler.miscellaneous.OtherFlags>-pipe -fno-strict-aliasing -Wall -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -std=gnu99 -ffunction-sections -fdata-sections -Wchar-subscripts -Wcomment -Wformat=2 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch -Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wundef -Wshadow -Wbad-function-cast -Wwrite-strings -Wsign-compare -Waggregate-return -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs -Wlong-long -Wunreachable-code -Wcast-align --param max-inline-insns-single=500 -mfloat-abi=softfp -mfpu=fpv4-sp-d16</armgcc.compiler.miscellaneous.OtherFlags>
   <armgcc.linker.libraries.Libraries>
     <ListValues>
+      <Value>lib_nand_flash_cortexm4</Value>
       <Value>libarm_cortexM4lf_math_softfp</Value>
       <Value>libm</Value>
     </ListValues>
@@ -381,13 +555,14 @@
     <ListValues>
       <Value>../cmsis/linkerScripts</Value>
       <Value>../src/ASF/thirdparty/CMSIS/Lib/GCC</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib/gcc</Value>
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
   <armgcc.linker.miscellaneous.LinkerFlags>-Wl,--entry=Reset_Handler -Wl,--cref -mthumb -T../src/ASF/sam/utils/linker_scripts/sam4e/sam4e16/gcc/flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
-      <Value>../src</Value>
+      <Value>../src/ASF/sam/drivers/wdt</Value>
     </ListValues>
   </armgcc.assembler.general.IncludePaths>
   <armgcc.assembler.debugging.DebugLevel>Default (-g)</armgcc.assembler.debugging.DebugLevel>
@@ -420,6 +595,27 @@
       <Value>../src/ASF/sam/drivers/usart</Value>
       <Value>../src/ASF/sam/components/ethernet_phy/ksz8081mnx</Value>
       <Value>../src/ASF/sam/drivers/uart</Value>
+      <Value>../src/ASF/common/services/storage/ctrl_access</Value>
+      <Value>../src/ASF/sam/drivers/ebi/smc</Value>
+      <Value>../src/ASF/sam/drivers/efc</Value>
+      <Value>../src/ASF/sam/drivers/gpbr</Value>
+      <Value>../src/ASF/sam/drivers/matrix</Value>
+      <Value>../src/ASF/sam/drivers/pio</Value>
+      <Value>../src/ASF/sam/drivers/rstc</Value>
+      <Value>../src/ASF/sam/drivers/rtt</Value>
+      <Value>../src/ASF/sam/drivers/tc</Value>
+      <Value>../src/ASF/sam/services/flash_efc</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi</Value>
+      <Value>../src/ASF/common/components/memory/nand_flash/nand_flash_ebi/ftl_lib</Value>
+      <Value>../src/ASF/common/services/delay</Value>
+      <Value>../src/ASF/common/services/gpio</Value>
+      <Value>../src/ASF/common/services/spi/sam_spi</Value>
+      <Value>../src/ASF/common/services/spi</Value>
+      <Value>../src/ASF/common/services/storage/ecc_hamming</Value>
+      <Value>../src/ASF/common/services/twi</Value>
+      <Value>../src/ASF/sam/drivers/spi</Value>
+      <Value>../src/ASF/sam/drivers/twi</Value>
+      <Value>../src/ASF/sam/drivers/wdt</Value>
     </ListValues>
   </armgcc.preprocessingassembler.general.IncludePaths>
   <armgcc.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</armgcc.preprocessingassembler.debugging.DebugLevel>
@@ -431,13 +627,30 @@
     <Folder Include="src\ASF\" />
     <Folder Include="src\ASF\common\" />
     <Folder Include="src\ASF\common\boards\" />
+    <Folder Include="src\ASF\common\components\" />
+    <Folder Include="src\ASF\common\components\memory\" />
+    <Folder Include="src\ASF\common\components\memory\nand_flash\" />
+    <Folder Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\" />
+    <Folder Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\" />
+    <Folder Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\gcc\" />
     <Folder Include="src\ASF\common\services\" />
     <Folder Include="src\ASF\common\services\clock\" />
     <Folder Include="src\ASF\common\services\clock\sam4e\" />
+    <Folder Include="src\ASF\common\services\delay\" />
+    <Folder Include="src\ASF\common\services\delay\sam\" />
+    <Folder Include="src\ASF\common\services\gpio\" />
+    <Folder Include="src\ASF\common\services\gpio\sam_gpio\" />
     <Folder Include="src\ASF\common\services\ioport\" />
     <Folder Include="src\ASF\common\services\ioport\sam\" />
     <Folder Include="src\ASF\common\services\serial\" />
     <Folder Include="src\ASF\common\services\serial\sam_uart\" />
+    <Folder Include="src\ASF\common\services\spi\" />
+    <Folder Include="src\ASF\common\services\spi\sam_spi\" />
+    <Folder Include="src\ASF\common\services\storage\" />
+    <Folder Include="src\ASF\common\services\storage\ctrl_access\" />
+    <Folder Include="src\ASF\common\services\storage\ecc_hamming\" />
+    <Folder Include="src\ASF\common\services\twi\" />
+    <Folder Include="src\ASF\common\services\twi\sam_twi\" />
     <Folder Include="src\ASF\common\utils\" />
     <Folder Include="src\ASF\common\utils\interrupt\" />
     <Folder Include="src\ASF\common\utils\stdio\" />
@@ -449,10 +662,26 @@
     <Folder Include="src\ASF\sam\components\ethernet_phy\" />
     <Folder Include="src\ASF\sam\components\ethernet_phy\ksz8081mnx\" />
     <Folder Include="src\ASF\sam\drivers\" />
+    <Folder Include="src\ASF\sam\drivers\ebi\" />
+    <Folder Include="src\ASF\sam\drivers\ebi\smc\" />
+    <Folder Include="src\ASF\sam\drivers\efc\" />
     <Folder Include="src\ASF\sam\drivers\gmac\" />
+    <Folder Include="src\ASF\sam\drivers\gpbr\" />
+    <Folder Include="src\ASF\sam\drivers\matrix\" />
+    <Folder Include="src\ASF\sam\drivers\pio\" />
     <Folder Include="src\ASF\sam\drivers\pmc\" />
+    <Folder Include="src\ASF\sam\drivers\rstc\" />
+    <Folder Include="src\ASF\sam\drivers\rstc\example1\" />
+    <Folder Include="src\ASF\sam\drivers\rtt\" />
+    <Folder Include="src\ASF\sam\drivers\spi\" />
+    <Folder Include="src\ASF\sam\drivers\tc\" />
+    <Folder Include="src\ASF\sam\drivers\tc\tc_capture_waveform_example\" />
+    <Folder Include="src\ASF\sam\drivers\twi\" />
     <Folder Include="src\ASF\sam\drivers\uart\" />
     <Folder Include="src\ASF\sam\drivers\usart\" />
+    <Folder Include="src\ASF\sam\drivers\wdt\" />
+    <Folder Include="src\ASF\sam\services\" />
+    <Folder Include="src\ASF\sam\services\flash_efc\" />
     <Folder Include="src\ASF\sam\utils\" />
     <Folder Include="src\ASF\sam\utils\cmsis\" />
     <Folder Include="src\ASF\sam\utils\cmsis\sam4e\" />
@@ -481,6 +710,189 @@
     <Folder Include="src\config\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\ASF\common\services\spi\sam_spi\spi_master.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\common\services\storage\ecc_hamming\ecc-sw.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\pio\pio_handler.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\spi\spi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\twi\twi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\wdt\wdt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\sam\drivers\wdt\wdt.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\twi\twi.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\spi\spi.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\pio\pio_handler.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\twi\sam_twi\twi_slave.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\twi\twi_master.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\twi\sam_twi\twi_master.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\twi\twi_slave.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\storage\ecc_hamming\ecc-sw.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\config\conf_spi_master.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\spi\spi_master.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\spi\sam_spi\spi_master.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\gpio\gpio.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\gpio\sam_gpio\sam_gpio.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\delay\delay.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\common\services\delay\sam\cycle_counter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\common\services\delay\sam\cycle_counter.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\gcc\lib_nand_flash_cortexm4.a">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\config\conf_nf.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_translation.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_management.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_mem.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_spare_scheme.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_ecc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_common.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\ftl_lib\nand_flash_mem.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_ecc_sw.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_model.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_raw.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_model.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_raw_smc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\common\components\memory\nand_flash\nand_flash_ebi\nand_flash_spare_scheme.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\common\services\storage\ctrl_access\ctrl_access.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\ebi\smc\smc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\efc\efc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\gpbr\gpbr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\matrix\matrix.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\pio\pio.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\rtt\rtt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\drivers\tc\tc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\ASF\sam\services\flash_efc\flash_efc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\sam\services\flash_efc\flash_efc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\tc\tc_capture_waveform_example\tc_capture_waveform_example.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\tc\tc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\rtt\rtt.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\rstc\example1\rstc_example1.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\sam\drivers\rstc\rstc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\sam\drivers\rstc\rstc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\pio\pio.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\matrix\matrix.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\gpbr\gpbr.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\efc\efc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\sam\drivers\ebi\smc\smc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\config\conf_access.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\common\services\storage\ctrl_access\ctrl_access.h">
+      <SubType>compile</SubType>
+    </None>
     <None Include="src\asf.h">
       <SubType>compile</SubType>
     </None>

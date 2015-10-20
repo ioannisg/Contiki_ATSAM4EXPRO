@@ -3,12 +3,19 @@
  *
  * \brief Board configuration.
  *
+<<<<<<< HEAD
  * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
  * \page License
  *
+=======
+ * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
+ *
+ * \asf_license_start
+ *
+>>>>>>> github/master
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -44,6 +51,7 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
+<<<<<<< HEAD
 #ifndef CONF_BOARD_H_INCLUDED
 #define CONF_BOARD_H_INCLUDED
 
@@ -79,3 +87,15 @@
 //! [tc_define_irq_handler]
 
 #endif /* CONF_BOARD_H_INCLUDED */
+=======
+#ifndef CONF_BOARD_H
+#define CONF_BOARD_H
+
+/* Configure UART pins */
+#define CONF_BOARD_UART_CONSOLE
+
+/* Enable ETH PHY: KSZ8051MNL feature */
+#define CONF_BOARD_KSZ8051MNL
+
+#endif /* CONF_BOARD_H */
+>>>>>>> github/master
