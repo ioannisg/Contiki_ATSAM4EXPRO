@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Board configuration.
+ * \brief Spi Master configuration.
  *
- * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -44,38 +44,24 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#ifndef CONF_BOARD_H_INCLUDED
-#define CONF_BOARD_H_INCLUDED
+#ifndef CONF_SPI_MASTER_H_INCLUDED
+#define CONF_SPI_MASTER_H_INCLUDED
 
-/** Enable Com Port. */
-#define CONF_BOARD_UART_CONSOLE
+/* Possibility to change low-level configurations here */
 
-//! [tc_define_peripheral]
-/* Use TC Peripheral 0. */
-#define TC             TC0
-#define TC_PERIPHERAL  0
-//! [tc_define_peripheral]
+//! Default Config Spi Master Delay BCS
+#define CONFIG_SPI_MASTER_DELAY_BCS            0
 
-//! [tc_define_ch1]
-/* Configure TC0 channel 1 as waveform output. */
-#define TC_CHANNEL_WAVEFORM 1
-#define ID_TC_WAVEFORM      ID_TC1
-#define PIN_TC_WAVEFORM     PIN_TC0_TIOA1
-#define PIN_TC_WAVEFORM_MUX PIN_TC0_TIOA1_MUX
-//! [tc_define_ch1]
+//! Default Config Spi Master Bits per Transfer Definition
+#define CONFIG_SPI_MASTER_BITS_PER_TRANSFER    8
 
-//! [tc_define_ch2]
-/* Configure TC0 channel 2 as capture input. */
-#define TC_CHANNEL_CAPTURE 2
-#define ID_TC_CAPTURE ID_TC2
-#define PIN_TC_CAPTURE PIN_TC0_TIOA2
-#define PIN_TC_CAPTURE_MUX PIN_TC0_TIOA2_MUX
-//! [tc_define_ch2]
+//! Default Config Spi Master Delay BCT
+#define CONFIG_SPI_MASTER_DELAY_BCT            0
 
-//! [tc_define_irq_handler]
-/* Use TC2_Handler for TC capture interrupt. */
-#define TC_Handler  TC2_Handler
-#define TC_IRQn     TC2_IRQn
-//! [tc_define_irq_handler]
+//! Default Config Spi Master Delay BS
+#define CONFIG_SPI_MASTER_DELAY_BS             0
 
-#endif /* CONF_BOARD_H_INCLUDED */
+//! Default Config Spi Master Dummy Field
+#define CONFIG_SPI_MASTER_DUMMY                0xFF
+
+#endif /* CONF_SPI_MASTER_H_INCLUDED */

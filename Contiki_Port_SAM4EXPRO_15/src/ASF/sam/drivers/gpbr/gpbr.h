@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Board configuration.
+ * \brief General Purpose Backup Registers (GPBR) driver for SAM.
  *
- * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -44,38 +44,66 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#ifndef CONF_BOARD_H_INCLUDED
-#define CONF_BOARD_H_INCLUDED
+#ifndef GPBR_H_INCLUDED
+#define GPBR_H_INCLUDED
 
-/** Enable Com Port. */
-#define CONF_BOARD_UART_CONSOLE
+#include "compiler.h"
 
-//! [tc_define_peripheral]
-/* Use TC Peripheral 0. */
-#define TC             TC0
-#define TC_PERIPHERAL  0
-//! [tc_define_peripheral]
+/// @cond 0
+/**INDENT-OFF**/
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**INDENT-ON**/
+/// @endcond
 
-//! [tc_define_ch1]
-/* Configure TC0 channel 1 as waveform output. */
-#define TC_CHANNEL_WAVEFORM 1
-#define ID_TC_WAVEFORM      ID_TC1
-#define PIN_TC_WAVEFORM     PIN_TC0_TIOA1
-#define PIN_TC_WAVEFORM_MUX PIN_TC0_TIOA1_MUX
-//! [tc_define_ch1]
+/** GPBR register number type */
+typedef enum gpbr_num_type {
+	GPBR0 = 0,
+	GPBR1,
+	GPBR2,
+	GPBR3,
+#if !SAM3U	
+	GPBR4,
+	GPBR5,
+	GPBR6,
+	GPBR7,
+#if (SAM4C || SAM4CP || SAM4CM)
+	GPBR8,
+	GPBR9,
+	GPBR10,
+	GPBR11,
+	GPBR12,
+	GPBR13,
+	GPBR14,
+	GPBR15,
+#endif
+#if SAM4E
+	GPBR8,
+	GPBR9,
+	GPBR10,
+	GPBR11,
+	GPBR12,
+	GPBR13,
+	GPBR14,
+	GPBR15,
+	GPBR16,
+	GPRB17,
+	GPBR18,
+	GPBR19,
+#endif
+#endif
+} gpbr_num_t;
 
-//! [tc_define_ch2]
-/* Configure TC0 channel 2 as capture input. */
-#define TC_CHANNEL_CAPTURE 2
-#define ID_TC_CAPTURE ID_TC2
-#define PIN_TC_CAPTURE PIN_TC0_TIOA2
-#define PIN_TC_CAPTURE_MUX PIN_TC0_TIOA2_MUX
-//! [tc_define_ch2]
+uint32_t gpbr_read(gpbr_num_t ul_reg_num);
+void gpbr_write(gpbr_num_t ul_reg_num, uint32_t ul_value);
 
-//! [tc_define_irq_handler]
-/* Use TC2_Handler for TC capture interrupt. */
-#define TC_Handler  TC2_Handler
-#define TC_IRQn     TC2_IRQn
-//! [tc_define_irq_handler]
+/// @cond 0
+/**INDENT-OFF**/
+#ifdef __cplusplus
+}
+#endif
+/**INDENT-ON**/
+/// @endcond
 
-#endif /* CONF_BOARD_H_INCLUDED */
+#endif /* GPBR_H_INCLUDED */

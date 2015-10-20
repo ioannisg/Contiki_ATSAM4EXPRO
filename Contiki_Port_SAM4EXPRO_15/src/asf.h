@@ -56,8 +56,26 @@
 #include <compiler.h>
 #include <status_codes.h>
 
+// From module: Delay routines
+#include <delay.h>
+
+// From module: EEFC - Enhanced Embedded Flash Controller
+#include <efc.h>
+
+// From module: Ethernet Physical Transceiver (ksz8051mnl)
+#include <ethernet_phy.h>
+
 // From module: Ethernet Physical Transceiver (ksz8081mnx)
 #include <ethernet_phy.h>
+
+// From module: Flash - SAM Flash Service API
+#include <flash_efc.h>
+
+// From module: GPBR - General Purpose Backup Register
+#include <gpbr.h>
+
+// From module: GPIO - General purpose Input/Output
+#include <gpio.h>
 
 // From module: Generic board support
 #include <board.h>
@@ -68,8 +86,27 @@
 // From module: Interrupt management - SAM implementation
 #include <interrupt.h>
 
+// From module: MATRIX - Bus Matrix
+#include <matrix.h>
+
+// From module: Memory Control Access Interface
+#include <ctrl_access.h>
+
+// From module: NAND Flash on EBI
+#include <nand_flash_common.h>
+#include <nand_flash_ecc.h>
+#include <nand_flash_management.h>
+#include <nand_flash_mem.h>
+#include <nand_flash_model.h>
+#include <nand_flash_raw.h>
+#include <nand_flash_spare_scheme.h>
+#include <nand_flash_translation.h>
+
 // From module: PHY Ethernet MAC (GMAC)
 #include <gmac.h>
+
+// From module: PIO - Parallel Input/Output Controller
+#include <pio.h>
 
 // From module: PMC - Power Management Controller
 #include <pmc.h>
@@ -77,6 +114,12 @@
 
 // From module: Part identification macros
 #include <parts.h>
+
+// From module: RSTC - Reset Controller
+#include <rstc.h>
+
+// From module: RTT - Real Time Timer
+#include <rtt.h>
 
 // From module: Raw Ethernet MAC (GMAC)
 #include <gmac.h>
@@ -91,11 +134,33 @@
 // From module: SAM4E startup code
 #include <exceptions.h>
 
+// From module: SMC - Static Memory Controller
+#include <smc.h>
+
+// From module: SPI - SAM Implementation
+#include <spi_master.h>
+#include <spi_master.h>
+
+// From module: SPI - Serial Peripheral Interface
+#include <spi.h>
+
 // From module: Standard serial I/O (stdio) - SAM implementation
 #include <stdio_serial.h>
 
 // From module: System Clock Control - SAM4E implementation
 #include <sysclk.h>
+
+// From module: TC - Timer Counter
+#include <tc.h>
+
+// From module: TWI - Two-Wire Interface - SAM implementation
+#include <sam_twi/twi_master.h>
+#include <sam_twi/twi_slave.h>
+#include <twi_master.h>
+#include <twi_slave.h>
+
+// From module: TWI - Two-wire Interface
+#include <twi.h>
 
 // From module: UART - Univ. Async Rec/Trans
 #include <uart.h>
@@ -105,5 +170,11 @@
 
 // From module: USART - Univ. Syn Async Rec/Trans
 #include <usart.h>
+
+// From module: WDT - Watchdog Timer
+#include <wdt.h>
+
+// From module: pio_handler support enabled
+#include <pio_handler.h>
 
 #endif // ASF_H

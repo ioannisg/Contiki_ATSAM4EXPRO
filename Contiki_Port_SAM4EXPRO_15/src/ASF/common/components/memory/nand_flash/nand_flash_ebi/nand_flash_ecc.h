@@ -1,9 +1,11 @@
 /**
  * \file
  *
- * \brief Board configuration.
+ * \brief ECC flash operation.
  *
- * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+ * This file contains definitions and functions for ECC NAND Flash operation.
+ *
+ * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -44,38 +46,40 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#ifndef CONF_BOARD_H_INCLUDED
-#define CONF_BOARD_H_INCLUDED
+#ifndef NAND_FLASH_ECC_H_INCLUDED
+#define NAND_FLASH_ECC_H_INCLUDED
 
-/** Enable Com Port. */
-#define CONF_BOARD_UART_CONSOLE
+/**
+ * NAND Flash ECC layer is called by upper layer, it will call the raw layer
+ * to do write/read operations, and do ECC check to the write/read result,
+ * it then will feedback the ECC check result to the upper layer.
+ *
+ * -# nand_flash_ecc_initialize is used to initializes an nand_flash_ecc
+ * instance.
+ * -# nand_flash_ecc_write_page is used to write a NAND Flash page with ECC
+ * result, the function will calculate ECC for the data that is going to be
+ * written, and write data and spare(with calculated ECC) to NAND Flash device.
+ * -# nand_flash_ecc_read_page is used to read a NAND Flash page with ECC
+ * check, the function will read out data and spare first, then it calculates
+ * ecc with data and then compare with the readout ECC, and feedback the ECC
+ * check result to upper layer.
+ */
 
-//! [tc_define_peripheral]
-/* Use TC Peripheral 0. */
-#define TC             TC0
-#define TC_PERIPHERAL  0
-//! [tc_define_peripheral]
+#include "nand_flash_raw.h"
 
-//! [tc_define_ch1]
-/* Configure TC0 channel 1 as waveform output. */
-#define TC_CHANNEL_WAVEFORM 1
-#define ID_TC_WAVEFORM      ID_TC1
-#define PIN_TC_WAVEFORM     PIN_TC0_TIOA1
-#define PIN_TC_WAVEFORM_MUX PIN_TC0_TIOA1_MUX
-//! [tc_define_ch1]
+struct nand_flash_ecc {
+	struct nand_flash_raw raw;
+};
 
-//! [tc_define_ch2]
-/* Configure TC0 channel 2 as capture input. */
-#define TC_CHANNEL_CAPTURE 2
-#define ID_TC_CAPTURE ID_TC2
-#define PIN_TC_CAPTURE PIN_TC0_TIOA2
-#define PIN_TC_CAPTURE_MUX PIN_TC0_TIOA2_MUX
-//! [tc_define_ch2]
+uint32_t nand_flash_ecc_initialize(struct nand_flash_ecc *ecc,
+		const struct nand_flash_model *model,
+		uint32_t command_address,
+		uint32_t address_address, uint32_t data_address);
 
-//! [tc_define_irq_handler]
-/* Use TC2_Handler for TC capture interrupt. */
-#define TC_Handler  TC2_Handler
-#define TC_IRQn     TC2_IRQn
-//! [tc_define_irq_handler]
+uint32_t nand_flash_ecc_read_page(const struct nand_flash_ecc *ecc,
+		uint16_t block, uint16_t page, uint8_t *data, uint8_t *spare);
 
-#endif /* CONF_BOARD_H_INCLUDED */
+uint32_t nand_flash_ecc_write_page(const struct nand_flash_ecc *ecc,
+		uint16_t block, uint16_t page, uint8_t *data, uint8_t *spare);
+
+#endif /* NAND_FLASH_ECC_H_INCLUDED */

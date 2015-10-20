@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Board configuration.
+ * \brief TWI Slave driver for SAM.
  *
- * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2011-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -44,38 +44,58 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#ifndef CONF_BOARD_H_INCLUDED
-#define CONF_BOARD_H_INCLUDED
+#ifndef _TWI_SLAVE_H_
+#define _TWI_SLAVE_H_
 
-/** Enable Com Port. */
-#define CONF_BOARD_UART_CONSOLE
+#include "twi.h"
+#include "sysclk.h"
 
-//! [tc_define_peripheral]
-/* Use TC Peripheral 0. */
-#define TC             TC0
-#define TC_PERIPHERAL  0
-//! [tc_define_peripheral]
+typedef Twi *twi_slave_t;
 
-//! [tc_define_ch1]
-/* Configure TC0 channel 1 as waveform output. */
-#define TC_CHANNEL_WAVEFORM 1
-#define ID_TC_WAVEFORM      ID_TC1
-#define PIN_TC_WAVEFORM     PIN_TC0_TIOA1
-#define PIN_TC_WAVEFORM_MUX PIN_TC0_TIOA1_MUX
-//! [tc_define_ch1]
+static inline void twi_slave_setup(twi_slave_t p_twi, uint32_t dw_device_addr)
+{
+#if SAMG55
+	if (p_twi == TWI0) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM0);
+	} else if (p_twi == TWI1) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM1);
+	} else if (p_twi == TWI2) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM2);
+	} else if (p_twi == TWI3) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM3);
+	} else if (p_twi == TWI4) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM4);
+	} else if (p_twi == TWI5) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM5);
+	} else if (p_twi == TWI6) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM6);
+	} else if (p_twi == TWI7) {
+		sysclk_enable_peripheral_clock(ID_FLEXCOM7);
+	} else {
+		// Do Nothing
+	}
+#else
+#if (!(SAMG51 || SAMG53 || SAMG54))
+	if (p_twi == TWI0) {
+		sysclk_enable_peripheral_clock(ID_TWI0);
+	} else
+#endif
+	if (p_twi == TWI1) {
+		sysclk_enable_peripheral_clock(ID_TWI1);
+#if (SAM4N || SAMG)
+	} else if (p_twi == TWI2) {
+		sysclk_enable_peripheral_clock(ID_TWI2);
+#endif
+	} else {
+		// Do Nothing
+	}
+#endif
 
-//! [tc_define_ch2]
-/* Configure TC0 channel 2 as capture input. */
-#define TC_CHANNEL_CAPTURE 2
-#define ID_TC_CAPTURE ID_TC2
-#define PIN_TC_CAPTURE PIN_TC0_TIOA2
-#define PIN_TC_CAPTURE_MUX PIN_TC0_TIOA2_MUX
-//! [tc_define_ch2]
+	twi_slave_init(p_twi, dw_device_addr);
+}
 
-//! [tc_define_irq_handler]
-/* Use TC2_Handler for TC capture interrupt. */
-#define TC_Handler  TC2_Handler
-#define TC_IRQn     TC2_IRQn
-//! [tc_define_irq_handler]
+#define twi_slave_enable(p_twi)  twi_enable_slave_mode(p_twi)
 
-#endif /* CONF_BOARD_H_INCLUDED */
+#define twi_slave_disable(p_twi)  twi_disable_slave_mode(p_twi)
+
+#endif // _TWI_SLAVE_H_

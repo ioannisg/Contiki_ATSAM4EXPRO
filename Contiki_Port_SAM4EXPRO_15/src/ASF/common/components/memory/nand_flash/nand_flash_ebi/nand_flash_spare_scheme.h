@@ -1,9 +1,12 @@
 /**
  * \file
  *
- * \brief Board configuration.
+ * \brief Flash spare area scheme.
  *
- * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
+ * This file contains definitions and functions to do NAND Flash device's
+ * spare area operations.
+ *
+ * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
@@ -44,38 +47,40 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#ifndef CONF_BOARD_H_INCLUDED
-#define CONF_BOARD_H_INCLUDED
+#ifndef NAND_FLASH_SPARE_SCHEME_H_INCLUDED
+#define NAND_FLASH_SPARE_SCHEME_H_INCLUDED
 
-/** Enable Com Port. */
-#define CONF_BOARD_UART_CONSOLE
+#include "nand_flash_common.h"
 
-//! [tc_define_peripheral]
-/* Use TC Peripheral 0. */
-#define TC             TC0
-#define TC_PERIPHERAL  0
-//! [tc_define_peripheral]
+struct nand_flash_spare_scheme {
+	uint8_t bad_block_marker_position;
+	uint8_t ecc_byte_number;
+	uint8_t ecc_bytes_positions[NAND_COMMON_MAX_SPARE_ECC_BYTES];
+	uint8_t extra_byte_number;
+	uint8_t extra_bytes_positions[NAND_COMMON_MAX_SPARE_EXTRA_BYTES];
+};
 
-//! [tc_define_ch1]
-/* Configure TC0 channel 1 as waveform output. */
-#define TC_CHANNEL_WAVEFORM 1
-#define ID_TC_WAVEFORM      ID_TC1
-#define PIN_TC_WAVEFORM     PIN_TC0_TIOA1
-#define PIN_TC_WAVEFORM_MUX PIN_TC0_TIOA1_MUX
-//! [tc_define_ch1]
+extern const struct nand_flash_spare_scheme nand_flash_spare_scheme_256;
+extern const struct nand_flash_spare_scheme nand_flash_spare_scheme_512;
+extern const struct nand_flash_spare_scheme nand_flash_spare_scheme_2048;
+extern const struct nand_flash_spare_scheme nand_flash_spare_scheme_4096;
 
-//! [tc_define_ch2]
-/* Configure TC0 channel 2 as capture input. */
-#define TC_CHANNEL_CAPTURE 2
-#define ID_TC_CAPTURE ID_TC2
-#define PIN_TC_CAPTURE PIN_TC0_TIOA2
-#define PIN_TC_CAPTURE_MUX PIN_TC0_TIOA2_MUX
-//! [tc_define_ch2]
+void nand_flash_spare_scheme_read_bad_block_marker(const struct
+		nand_flash_spare_scheme *scheme, const uint8_t *spare,
+		uint8_t *marker);
+void nand_flash_spare_scheme_write_bad_block_marker(const struct
+		nand_flash_spare_scheme *scheme, uint8_t *spare,
+		uint8_t marker);
+void nand_flash_spare_scheme_read_ecc(const struct nand_flash_spare_scheme
+		*scheme, const uint8_t *spare, uint8_t *ecc);
+void nand_flash_spare_scheme_write_ecc(const struct nand_flash_spare_scheme
+		*scheme, uint8_t *spare, const uint8_t *ecc);
+void nand_flash_spare_scheme_read_extra(const struct nand_flash_spare_scheme
+		*scheme, const uint8_t *spare, void *extra, uint8_t size,
+		uint8_t offset);
+void nand_flash_spare_scheme_write_extra(const struct nand_flash_spare_scheme
+		*scheme, uint8_t *spare, const void *extra, uint8_t size,
+		uint8_t offset);
 
-//! [tc_define_irq_handler]
-/* Use TC2_Handler for TC capture interrupt. */
-#define TC_Handler  TC2_Handler
-#define TC_IRQn     TC2_IRQn
-//! [tc_define_irq_handler]
+#endif /* NAND_FLASH_SPARE_SCHEME_H_INCLUDED */
 
-#endif /* CONF_BOARD_H_INCLUDED */
