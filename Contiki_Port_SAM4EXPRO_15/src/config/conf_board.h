@@ -44,11 +44,15 @@
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#ifndef CONF_BOARD_H_INCLUDED
-#define CONF_BOARD_H_INCLUDED
+#ifndef CONF_BOARD_H
+#define CONF_BOARD_H
 
-/** Enable Com Port. */
+/* Configure UART pins */
 #define CONF_BOARD_UART_CONSOLE
+
+/* Enable ETH PHY: KSZ8051MNL feature */
+#define CONF_BOARD_KSZ8051MNL
+
 
 //! [tc_define_peripheral]
 /* Use TC Peripheral 0. */
@@ -78,4 +82,5 @@
 #define TC_IRQn     TC2_IRQn
 //! [tc_define_irq_handler]
 
-#endif /* CONF_BOARD_H_INCLUDED */
+
+#endif /* CONF_BOARD */
