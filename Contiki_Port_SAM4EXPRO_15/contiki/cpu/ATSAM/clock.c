@@ -60,7 +60,7 @@ clock_init(void)
   PRINTF("clock: The output of the sysclk_get_cpu_hz() is %u Hz.\n",
     (unsigned int)sysclk_get_cpu_hz());
 
-  if (SysTick_Config(sysclk_get_cpu_hz() / 1000)) {
+  if (SysTick_Config(sysclk_get_cpu_hz() / CLOCK_SECOND)) {
     assert(0);
   }
   cpu_irq_leave_critical();
@@ -108,6 +108,7 @@ clock_wait(clock_time_t t)
 void
 clock_delay_usec(uint16_t dt)
 {
+  watchdog_periodic();
   delay_us(dt);
 }
 /*---------------------------------------------------------------------------*/

@@ -53,6 +53,8 @@
 /* Enable ETH PHY: KSZ8051MNL feature */
 #define CONF_BOARD_KSZ8051MNL
 
+/** Don't change WDT mode register in init.c */
+#define CONF_BOARD_KEEP_WATCHDOG_AT_INIT
 
 //! [tc_define_peripheral]
 /* Use TC Peripheral 0. */
