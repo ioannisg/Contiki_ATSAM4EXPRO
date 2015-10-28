@@ -18,12 +18,6 @@
 #endif /* PEND_SV_CONF_PRIORITY */
 
 /*---------------------------------------------------------------------------*/
-swi_evt_request_t *
-swi_evt_request_pop(void)
-{
-  return NULL; //TODO move
-}
-/*---------------------------------------------------------------------------*/
 void
 swi_arch_init(void)
 {
@@ -35,6 +29,7 @@ void
 swi_arch_signal(void)
 {
   /* Set pending flag */
+  SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -47,7 +42,7 @@ PendSV_Handler(void)
   SCB->ICSR = SCB_ICSR_PENDSVCLR_Msk;
   cpu_irq_leave_critical();
   /* Start timer to mark the end of the pending time slot. */
-  
+
   /* Execute the handler */  
   if ((req != NULL) && (req->handler != NULL))
   {
