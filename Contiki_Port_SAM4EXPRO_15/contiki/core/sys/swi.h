@@ -12,6 +12,12 @@
 #include <stdint.h>
 #include "sys/clock.h"
 
+typedef enum {
+  SWI_STATUS_SUCCESS = 0,
+  SWI_STATUS_ERR_QUEUE_FULL,
+  SWI_STATUS_ERR_INVALID_PARAM,
+} swi_status_t;
+
 struct swi_evt_request;
 typedef struct swi_evt_request swi_evt_request_t;
 
@@ -35,5 +41,11 @@ void swi_arch_signal(void);
 #define SWI_SIGNAL() swi_arch_signal()
 
 swi_evt_request_t * swi_evt_request_pop(void);
+
+swi_status_t swi_evt_queue(swi_evt_request_id_t id,
+                           clock_time_t duration,
+                           clock_time_t max_wait_time,
+                           swi_handler_t handler,
+                           swi_ptr_t *ptr);
 
 #endif /* SWI_H_ */

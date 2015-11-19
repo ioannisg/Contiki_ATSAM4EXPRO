@@ -25,7 +25,7 @@ swi_arch_init(void)
   NVIC_SetPriority(PendSV_IRQn, PEND_SV_PRIORITY);	
 }
 /*---------------------------------------------------------------------------*/
-void
+inline void
 swi_arch_signal(void)
 {
   /* Set pending flag */

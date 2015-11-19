@@ -28,3 +28,12 @@ swi_evt_request_pop(void)
   return (swi_evt_request_t *)list_pop(swi_evt_list); 
 }
 /*---------------------------------------------------------------------------*/
+swi_status_t swi_evt_queue(swi_evt_request_id_t id,
+  clock_time_t duration,
+  clock_time_t max_wait_time,
+  swi_handler_t handler,
+  swi_ptr_t *ptr)
+{
+  return SWI_STATUS_SUCCESS;
+}
+/*---------------------------------------------------------------------------*/
