@@ -6,6 +6,7 @@
  */
 #include "contiki.h"
 #include "dev\watchdog.h"
+#include "dev\ethernetstack.h"
 #include "uart0.h"
 #include "conf_uart_serial.h"
 
@@ -66,6 +67,12 @@ main(void)
   /* Initialize the rtimer library */
   rtimer_init();
 
+#ifdef ETHERNETSTACK_CONF_WITH_ETHERNET
+  ethernetstack_init();
+#endif
+
+  /* Initialize networking TODO netstack_init() */
+
   /* Initialize watch-dog timer */
   watchdog_start();
 
@@ -78,5 +85,10 @@ main(void)
     /* Contiki Polling System */
     process_run();
   }
+}
+/*---------------------------------------------------------------------------*/
+void HardFault_Handler(void)
+{
+  while(1);
 }
 /*---------------------------------------------------------------------------*/
