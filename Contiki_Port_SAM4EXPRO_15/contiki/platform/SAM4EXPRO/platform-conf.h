@@ -49,4 +49,7 @@ typedef uint64_t rtimer_clock_t;
 /*----------------------------- UART Settings. ------------------------------*/
 #define UART_CONF_IRQ_PRIORITY               4
 
+/*------------------------ Link Interface Settings. -------------------------*/
+#define ETHERNETSTACK_CONF_WITH_ETHERNET
+#define ETHERNET_CONF_STACK                  gmac_driver
 #endif /* PLATFORM-CONF_H_ */
