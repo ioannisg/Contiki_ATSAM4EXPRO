@@ -37,6 +37,7 @@ typedef unsigned short uip_stats_t;
 #define RTIMER_ARCH_CONF_TCX_PRIORITY        2
 
 #define RTIMER_CLOCK_LT(a,b)                 ((signed short)((a)-(b)) < 0)
+#define RTIMER_CLOCK_DIFF(a,b)               ((signed short)((a)-(b)))
 
 typedef uint64_t rtimer_clock_t;
 
