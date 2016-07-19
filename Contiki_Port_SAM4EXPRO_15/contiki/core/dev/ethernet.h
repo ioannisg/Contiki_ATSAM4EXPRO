@@ -92,7 +92,7 @@ struct eth_driver {
   /** Initialize the Ethernet device */
   void (*init)(void);
         
-  /** Initialize the Ethernet device */
+  /** Reset the Ethernet device */
   void (*reset)(void);
                 
   /** Set the device MAC address */		 
