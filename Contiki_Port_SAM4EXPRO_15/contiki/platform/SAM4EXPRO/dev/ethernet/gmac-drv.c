@@ -20,6 +20,8 @@
 
 #include <string.h>
 
+#ifdef WITH_ETHERNET_SUPPORT
+
 #define DEBUG 1
 #if DEBUG
 #include <stdio.h>
@@ -319,7 +321,7 @@ PROCESS_THREAD(gmac_driver_process, ev, data)
   gmac_drv_device.state = GMAC_DRV_STATE_IDLE;
 
   /* Notify Contiki network stack that Ethernet interface is up. */
-  //NETSTACK_0_MAC.connect_event(1);
+  NETSTACK_0_MAC.connect_event(1);
 
   /* Driver's loop */
   while(1)
@@ -352,3 +354,4 @@ const struct eth_driver gmac_driver = {
   NULL,
 };
 /*---------------------------------------------------------------------------*/
+#endif /* WITH_ETHERNET_SUPPORT */
