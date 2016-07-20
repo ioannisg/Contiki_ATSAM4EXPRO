@@ -172,39 +172,49 @@ gmac_driver_pollhandler(void)
   uint32_t rx_status;
   uint32_t rx_len = 0;
 
-  assert((gmac_drv_device.state & GMAC_DRV_STATE_PENDING_RX) != 0);
+  assert((gmac_drv_device.state & (GMAC_DRV_STATE_PENDING_RX | GMAC_DRV_STATE_PENDING_TX)) != 0);
 
-  /* All packets will be processed before return, so we clear the state indicator now. FIXME place inside critical region. */
-  gmac_drv_device.state &= ~(GMAC_DRV_STATE_PENDING_RX);
-
-  /* RX Event occurred */
-  while(1)
+  if (gmac_drv_device.state & GMAC_DRV_STATE_PENDING_RX)
   {
-    watchdog_periodic();
-    /* Clear packet buffer contents */
-	 packetbuf_clear();
-    /* packet buffer mush have sufficient size to accommodate the received frame */
-    rx_status = gmac_dev_read(&gs_gmac_dev, (uint8_t *)packetbuf_dataptr(), ETHERNET_MAX_FRAME_LEN, &rx_len);
-    if (rx_status != GMAC_OK)
+    /* RX Event occurred */
+    /* All packets (including those that may arrive while the poll-handler is executing),
+     * will be processed before return, so it is safe to clear the state indicator now.
+     */
+    gmac_drv_device.state &= ~(GMAC_DRV_STATE_PENDING_RX);
+    /* FIXME enter critical region. */
+    if ((gmac_drv_device.state & (GMAC_DRV_STATE_PENDING_RX | GMAC_DRV_STATE_PENDING_TX)) == 0)
     {
-      if (rx_status != GMAC_RX_NO_DATA)
-      {
-        PRINTF("gmac-drv. read-error:%lu\n", rx_status);
-        /* TODO consider resetting the device */
-      }
-		else
-      {
-        /* All packets are processed */
-      }
-      break;
+      /* TODO Remove process poll if registered */
     }
-    /* Process packet */
-    PRINTF("gmac-drv: process-RX[%lu]\n", rx_len);
-    packetbuf_set_datalen(rx_len);
-    /* Send the packet to the network stack. */
-    //NETSTACK_0_MAC.input();
+    /* FIXME exit critical region. */
+
+    while(1)
+    {
+      watchdog_periodic();
+      /* Clear packet buffer contents */
+      packetbuf_clear();
+      /* packet buffer mush have sufficient size to accommodate the received frame */
+      rx_status = gmac_dev_read(&gs_gmac_dev, (uint8_t *)packetbuf_dataptr(), ETHERNET_MAX_FRAME_LEN, &rx_len);
+      if (rx_status != GMAC_OK)
+      {
+        if (rx_status != GMAC_RX_NO_DATA)
+        {
+          PRINTF("gmac-drv. read-error:%lu\n", rx_status);
+          /* TODO consider resetting the device */
+        }
+        else
+        {
+        /* All packets are processed */
+        }
+        break;
+      }
+      /* Process packet */
+      PRINTF("gmac-drv: process-RX[%lu]\n", rx_len);
+      packetbuf_set_datalen(rx_len);
+      /* Send the packet to the network stack. */
+      //NETSTACK_0_MAC.input();
+    }
   }
-}
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(gmac_driver_process, ev, data)
 {
