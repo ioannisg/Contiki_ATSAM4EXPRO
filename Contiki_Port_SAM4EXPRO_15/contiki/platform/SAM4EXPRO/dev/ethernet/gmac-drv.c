@@ -161,6 +161,11 @@ gmac_driver_get_mac_address(void)
   return (linkaddr6_t *)&gs_uc_mac_address[0];
 }
 /*---------------------------------------------------------------------------*/
+gmac_driver_is_initialized(void)
+{
+  return !(gmac_drv_device.state & GMAC_DRV_STATE_NOT_INITIALIZED);
+}
+/*---------------------------------------------------------------------------*/
 static void
 gmac_driver_pollhandler(void)
 {
@@ -194,7 +199,7 @@ gmac_driver_pollhandler(void)
       break;
     }
     /* Process packet */
-    PRINTF("gmac-drv: process-RX %lu\n", rx_len);
+    PRINTF("gmac-drv: process-RX[%lu]\n", rx_len);
     packetbuf_set_datalen(rx_len);
     /* Send the packet to the network stack. */
     //NETSTACK_0_MAC.input();
@@ -261,7 +266,7 @@ const struct eth_driver gmac_driver = {
   gmac_driver_set_mac_address,
   gmac_driver_get_mac_address,
   NULL,
-  NULL,
+  gmac_driver_is_initialized,
   NULL,
   NULL,
   NULL,
