@@ -51,7 +51,7 @@ static uint8_t gs_uc_mac_address[] = {
 static void
 gmac_dev_rx_callback(uint32_t status)
 {
-  assert((gmac_drv_device.state & ((GMAC_DRV_STATE_NOT_INITIALIZED) | (GMAC_DRV_STATE_RESET_PENDING))) == 0);
+  assert((gmac_drv_device.state & ((GMAC_DRV_STATE_NOT_INITIALIZED) | (GMAC_DRV_STATE_PENDING_RESET))) == 0);
 
   /* Invoke poll handler if packet is received successfully */
   if (GMAC_RSR_REC == status)
@@ -76,7 +76,7 @@ gmac_dev_rx_callback(uint32_t status)
     }
   }
   /* Set state to pending */
-  gmac_drv_device.state |= GMAC_DRV_STATE_RX_PENDING;
+  gmac_drv_device.state |= GMAC_DRV_STATE_PENDING_RX;
   process_poll(&gmac_driver_process);
 }
 /*---------------------------------------------------------------------------*/
@@ -167,7 +167,10 @@ gmac_driver_pollhandler(void)
   uint32_t rx_status;
   uint32_t rx_len = 0;
 
-  assert((gmac_drv_device.state & GMAC_DRV_STATE_RX_PENDING) != 0);
+  assert((gmac_drv_device.state & GMAC_DRV_STATE_PENDING_RX) != 0);
+
+  /* All packets will be processed before return, so we clear the state indicator now. FIXME place inside critical region. */
+  gmac_drv_device.state &= ~(GMAC_DRV_STATE_PENDING_RX);
 
   /* RX Event occurred */
   while(1)
@@ -186,8 +189,7 @@ gmac_driver_pollhandler(void)
       }
 		else
       {
-        /* All packets are processed FIXME */
-        gmac_drv_device.state &= ~(GMAC_DRV_STATE_RX_PENDING);
+        /* All packets are processed */
       }
       break;
     }

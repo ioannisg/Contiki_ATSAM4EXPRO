@@ -13,10 +13,10 @@
 // TODO Move all this to core/dev/ethernet.h
 typedef enum {
   GMAC_DRV_STATE_NOT_INITIALIZED = 0x01,
-  GMAC_DRV_STATE_RESET_PENDING   = 0x02,
+  GMAC_DRV_STATE_PENDING_RESET   = 0x02,
   GMAC_DRV_STATE_IDLE            = 0x04,
-  GMAC_DRV_STATE_RX_PENDING      = 0x08,
-  GMAC_DRV_STATE_TX_PENDING      = 0x10,
+  GMAC_DRV_STATE_PENDING_RX      = 0x08,
+  GMAC_DRV_STATE_PENDING_TX      = 0x10,
 }gmac_drv_state_t;
 
 typedef struct {
