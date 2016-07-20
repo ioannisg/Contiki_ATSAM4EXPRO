@@ -43,6 +43,7 @@
 
 #include "contiki.h"
 #include "net/linkaddr6.h"
+#include "net/mac/mac.h"
 
 #ifndef ETHERNET_CONF_MAX_FRAME_LEN
 #warning "Maximum ethernet frame length should be defined in platform-conf.h. Using default value."
@@ -114,7 +115,7 @@ struct eth_driver {
   linkaddr6_t* (*get_macaddr)(void);
 					 
   /** Transmit an Ethernet packet or add it to the driver outgoing queue */
-  int (*tx_packet)(void);
+  void (*tx_packet)(mac_callback_t sent_callback, void *ptr);
   
   /** Check whether the interface has been initialized */
   uint8_t (*is_initialized)(void);

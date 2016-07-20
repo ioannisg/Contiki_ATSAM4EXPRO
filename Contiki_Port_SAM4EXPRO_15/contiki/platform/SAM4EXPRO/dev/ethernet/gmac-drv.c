@@ -11,6 +11,7 @@
 #include "dev\ethernetstack.h"
 #include "dev\watchdog.h"
 #include "contiki-net.h"
+#include "contiki-lib.h"
 
 #include "conf_eth.h"
 #include "gmac_raw.h"
@@ -47,6 +48,17 @@ static uint8_t gs_uc_mac_address[] = {
   ETHERNET_CONF_ETHADDR4,
   ETHERNET_CONF_ETHADDR5
 };
+
+/* Declare the TX pending list of frames (corresponding to RX addresses) */
+LIST(gmac_drv_tx_pending_list);
+/* Declare the static memory for the TX pending meta-data queue */
+MEMB(gmac_drv_tx_pending_mem, gmac_drv_tx_pending_element_t, GMAC_DRV_TX_PENDING_MAX_QUEUE_LEN);
+
+/*---------------------------------------------------------------------------*/
+static void
+gmac_dev_tx_callback(uint32_t status)
+{
+}
 /*---------------------------------------------------------------------------*/
 static void
 gmac_dev_rx_callback(uint32_t status)
@@ -92,6 +104,12 @@ static void
 gmac_driver_init(void)
 {
   assert(gmac_drv_device.state == GMAC_DRV_STATE_NOT_INITIALIZED);
+
+  /* Initialize driver TX pending list */
+  list_init(gmac_drv_tx_pending_list);
+
+  /* Initialize driver TX pending queue for packet meta-data */
+  memb_init(&gmac_drv_tx_pending_mem);
 
   gmac_options_t m_gmac_option;
 
@@ -165,6 +183,55 @@ static uint8_t
 gmac_driver_is_initialized(void)
 {
   return !(gmac_drv_device.state & GMAC_DRV_STATE_NOT_INITIALIZED);
+}
+/*---------------------------------------------------------------------------*/
+static void
+gmac_driver_tx(mac_callback_t sent, void *ptr)
+{
+  int mac_status = MAC_TX_OK;
+  gmac_drv_tx_pending_element_t *p_tx_pkt;
+  PRINTF("gmac_drv: TX[%u]\n", packetbuf_totlen());
+
+  /* IEEE8023_mac shall currently not maintain a transmit queue. */
+  assert( ptr == NULL);
+
+  /* Store frame meta-data [receiver MAC address] */
+  p_tx_pkt = (gmac_drv_tx_pending_element_t *)memb_alloc(&gmac_drv_tx_pending_mem);
+  if (p_tx_pkt == NULL) {
+    PRINTF("gmac-drv: outgoing TX queue full\n");
+    return;
+  }
+  p_tx_pkt->next = NULL;
+  linkaddr6_copy(&p_tx_pkt->addr, (const linkaddr6_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
+
+  /* Enqueue the frame for transmission. Submit the callback function. */
+  switch(gmac_dev_write(&gs_gmac_dev, packetbuf_hdrptr(), packetbuf_totlen(), gmac_dev_tx_callback))
+  {
+    case GMAC_OK:
+      /* All OK. */
+      /* Set state to TX Pending*/
+      gmac_drv_device.state |= GMAC_DRV_STATE_PENDING_TX;
+      /* Add pending TX frame to list */
+		list_add(gmac_drv_tx_pending_list, p_tx_pkt);
+      break;
+    case GMAC_TX_BUSY:
+      mac_status = MAC_TX_ERR;
+      break;
+    case GMAC_TIMEOUT:
+    case GMAC_PARAM:
+      mac_status = MAC_TX_ERR_FATAL;
+      break;
+    default:
+      assert(0);
+      break;
+  }
+  if (mac_status != MAC_TX_OK)
+  {
+    /* Remove from queue */
+    memb_free(&gmac_drv_tx_pending_mem, p_tx_pkt);
+    /* Notify NETSTACK */
+    mac_call_sent_callback(sent, NULL, mac_status, 1);
+  }
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -278,7 +345,7 @@ const struct eth_driver gmac_driver = {
   gmac_driver_reset,
   gmac_driver_set_mac_address,
   gmac_driver_get_mac_address,
-  NULL,
+  gmac_driver_tx,
   gmac_driver_is_initialized,
   NULL,
   NULL,
