@@ -7,6 +7,7 @@
 #include "assert.h"
 #include "net\linkaddr6.h"
 #include "net\netstack_x.h"
+#include "packetbuf.h"
 #include "dev\ethernetstack.h"
 #include "dev\watchdog.h"
 #include "contiki-net.h"
@@ -34,7 +35,9 @@ PROCESS(gmac_driver_process, "GMAC_driver_process");
 static gmac_device_t gs_gmac_dev;
 
 /** The driver state & statistics context */
-static gmac_drv_t gmac_drv_device;
+static gmac_drv_t gmac_drv_device = {
+  .state = GMAC_DRV_STATE_NOT_INITIALIZED,
+};
 
 static uint8_t gs_uc_mac_address[] = {
   ETHERNET_CONF_ETHADDR0,
@@ -48,8 +51,7 @@ static uint8_t gs_uc_mac_address[] = {
 static void
 gmac_dev_rx_callback(uint32_t status)
 {
-  assert(gmac_drv_device.state != GMAC_DRV_STATE_NOT_INITIALIZED &&
-    gmac_drv_device.state != GMAC_DRV_STATE_RESETTING);
+  assert((gmac_drv_device.state & ((GMAC_DRV_STATE_NOT_INITIALIZED) | (GMAC_DRV_STATE_RESET_PENDING))) == 0);
 
   /* Invoke poll handler if packet is received successfully */
   if (GMAC_RSR_REC == status)
@@ -66,7 +68,7 @@ gmac_dev_rx_callback(uint32_t status)
     else if (GMAC_RSR_RXOVR == (GMAC_RSR_RXOVR & status))
     {
       gmac_drv_device.stats.rx_err_overrun++;
-      /* TODO Consider resetting the decvice */
+      /* TODO Consider resetting the device */
     }
     else
     {
@@ -74,7 +76,7 @@ gmac_dev_rx_callback(uint32_t status)
     }
   }
   /* Set state to pending */
-  gmac_drv_device.state = GMAC_DRV_STATE_RX_PENDING;
+  gmac_drv_device.state |= GMAC_DRV_STATE_RX_PENDING;
   process_poll(&gmac_driver_process);
 }
 /*---------------------------------------------------------------------------*/
@@ -162,23 +164,38 @@ gmac_driver_get_mac_address(void)
 static void
 gmac_driver_pollhandler(void)
 {
+  uint32_t rx_status;
+  uint32_t rx_len = 0;
+
+  assert((gmac_drv_device.state & GMAC_DRV_STATE_RX_PENDING) != 0);
+
   /* RX Event occurred */
-  PRINTF("gmac-drv: RX-poll\n");
-  uint32_t bytes_received = 0;
-  uint32_t read_status;
-  uint8_t recv_array[ETHERNET_MAX_FRAME_LEN];
   while(1)
   {
     watchdog_periodic();
-    read_status = gmac_dev_read(&gs_gmac_dev, &recv_array[0], ETHERNET_MAX_FRAME_LEN, &bytes_received);
-    if (read_status != GMAC_OK)
+    /* Clear packet buffer contents */
+	 packetbuf_clear();
+    /* packet buffer mush have sufficient size to accommodate the received frame */
+    rx_status = gmac_dev_read(&gs_gmac_dev, (uint8_t *)packetbuf_dataptr(), ETHERNET_MAX_FRAME_LEN, &rx_len);
+    if (rx_status != GMAC_OK)
     {
-      if (read_status != GMAC_RX_NO_DATA)
+      if (rx_status != GMAC_RX_NO_DATA)
       {
-        PRINTF("gmac-drv. read-error:%lu\n", read_status);
-	   }
-		break;
+        PRINTF("gmac-drv. read-error:%lu\n", rx_status);
+        /* TODO consider resetting the device */
+      }
+		else
+      {
+        /* All packets are processed FIXME */
+        gmac_drv_device.state &= ~(GMAC_DRV_STATE_RX_PENDING);
+      }
+      break;
     }
+    /* Process packet */
+    PRINTF("gmac-drv: process-RX %lu\n", rx_len);
+    packetbuf_set_datalen(rx_len);
+    /* Send the packet to the network stack. */
+    //NETSTACK_0_MAC.input();
   }
 }
 /*---------------------------------------------------------------------------*/
