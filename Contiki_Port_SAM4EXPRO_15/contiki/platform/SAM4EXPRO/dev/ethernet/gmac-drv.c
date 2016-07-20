@@ -161,6 +161,7 @@ gmac_driver_get_mac_address(void)
   return (linkaddr6_t *)&gs_uc_mac_address[0];
 }
 /*---------------------------------------------------------------------------*/
+static uint8_t
 gmac_driver_is_initialized(void)
 {
   return !(gmac_drv_device.state & GMAC_DRV_STATE_NOT_INITIALIZED);
@@ -181,12 +182,13 @@ gmac_driver_pollhandler(void)
      * will be processed before return, so it is safe to clear the state indicator now.
      */
     gmac_drv_device.state &= ~(GMAC_DRV_STATE_PENDING_RX);
-    /* FIXME enter critical region. */
+    cpu_irq_enter_critical();
     if ((gmac_drv_device.state & (GMAC_DRV_STATE_PENDING_RX | GMAC_DRV_STATE_PENDING_TX)) == 0)
     {
-      /* TODO Remove process poll if registered */
+      /* Remove process poll if registered */
+      gmac_driver_process.needspoll = 0;
     }
-    /* FIXME exit critical region. */
+    cpu_irq_leave_critical();
 
     while(1)
     {
@@ -215,6 +217,7 @@ gmac_driver_pollhandler(void)
       //NETSTACK_0_MAC.input();
     }
   }
+}
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(gmac_driver_process, ev, data)
 {
