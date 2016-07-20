@@ -51,6 +51,18 @@
 #define ETHERNET_MAX_FRAME_LEN ETHERNET_CONF_MAX_FRAME_LEN
 #endif /* ETHERNET_CONF_MAX_FRAME__LEN */
 
+/**
+ * Structure for statistics collection of an Ethernet driver
+ */
+typedef struct {
+  uint32_t tx;                    /* Transmitted frames counter */
+  uint32_t rx;                    /* Received frames counter */
+  uint32_t tx_err;                /* Transmit errors counter */
+  uint32_t rx_err_no_buf;         /* Receive errors counter for no buffer availability */
+  uint32_t rx_err_overrun;        /* Receive errors counter for RX over-run*/
+  uint32_t reset_count;           /* Reset counter */
+} eth_stats_t;
+
 /** List of packets to be sent by Ethernet driver */
 struct eth_pkt_buf {
   struct eth_pkt_buf *next;
