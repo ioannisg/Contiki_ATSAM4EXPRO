@@ -60,6 +60,51 @@ MEMB(gmac_drv_tx_pending_mem, gmac_drv_tx_pending_element_t, GMAC_DRV_TX_PENDING
 static void
 gmac_dev_tx_callback(uint32_t status)
 {
+  assert((gmac_drv_device.state & ((GMAC_DRV_STATE_NOT_INITIALIZED) | (GMAC_DRV_STATE_PENDING_RESET))) == 0);
+
+  if (GMAC_TSR_TXCOMP == status)
+  {
+    gmac_drv_device.stats.tx++;
+  }
+  else
+  {
+    PRINTF("gmac-drv: tx-err:%lu\n", status);
+    gmac_drv_device.stats.tx_err++;
+    if (GMAC_TSR_RLE == status)
+    {
+      /* Retry-limit exceeded. Consider resetting the device */
+      PRINTF("gmac-drv: retry-limit-exceeded\n");
+    }
+    else if ((GMAC_TSR_UND | GMAC_TSR_COL) & status)
+    {
+      /* Collision or Under-run */
+    }
+    else
+    {
+      assert(0);
+    }
+  }
+  /* Set the next ACKED packet status. This callback is invoked for each
+   * packet, whose transmission is completed. So it is safe to go through
+   * the pending packets in the list and to acknowledge the first in line.
+   */
+  gmac_drv_tx_pending_element_t *p_pending_pkt = list_head(gmac_drv_tx_pending_list);
+  assert(p_pending_pkt != NULL);
+  uint8_t not_found = 1;
+  while(p_pending_pkt != NULL) {
+    if (!p_pending_pkt->status.is_acked)
+    {
+      p_pending_pkt->status.is_acked = 1;
+      p_pending_pkt->status.status = status;
+		not_found = 0;
+      break;
+    }
+    p_pending_pkt = p_pending_pkt->next;
+  }
+  assert(not_found);
+  /* Set state to pending */
+  gmac_drv_device.state |= GMAC_DRV_STATE_PENDING_TX;
+  process_poll(&gmac_driver_process);
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -74,7 +119,7 @@ gmac_dev_rx_callback(uint32_t status)
   }
   else
   {
-    PRINTF("gmac-drv: err:%lu\n", status);
+    PRINTF("gmac-drv: rx-err:%lu\n", status);
     if (GMAC_RSR_BNA == (GMAC_RSR_BNA & status))
     {
       gmac_drv_device.stats.rx_err_no_buf++;
@@ -198,12 +243,16 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
   assert( ptr == NULL);
 
   /* Store frame meta-data [receiver MAC address] */
+  cpu_irq_enter_critical();
   p_tx_pkt = (gmac_drv_tx_pending_element_t *)memb_alloc(&gmac_drv_tx_pending_mem);
+  cpu_irq_leave_critical();
   if (p_tx_pkt == NULL) {
     PRINTF("gmac-drv: outgoing TX queue full\n");
-    return;
+    mac_status = MAC_TX_ERR_FATAL;
+	 goto err_exit;
   }
   p_tx_pkt->next = NULL;
+  p_tx_pkt->status.is_acked = 0;
   linkaddr6_copy(&p_tx_pkt->addr, (const linkaddr6_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
 
   /* Enqueue the frame for transmission. Submit the callback function. */
@@ -211,8 +260,6 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
   {
     case GMAC_OK:
       /* All OK. */
-      /* Set state to TX Pending*/
-      gmac_drv_device.state |= GMAC_DRV_STATE_PENDING_TX;
       /* Add pending TX frame to list */
 		list_add(gmac_drv_tx_pending_list, p_tx_pkt);
       break;
@@ -232,6 +279,7 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
     /* Remove from queue */
     memb_free(&gmac_drv_tx_pending_mem, p_tx_pkt);
     /* Notify NETSTACK */
+err_exit:
     mac_call_sent_callback(sent, NULL, mac_status, 1);
   }
 }
@@ -283,9 +331,10 @@ gmac_driver_pollhandler(void)
       PRINTF("gmac-drv: process-RX[%lu]\n", rx_len);
       packetbuf_set_datalen(rx_len);
       /* Send the packet to the network stack. */
-      //NETSTACK_0_MAC.input();
+      NETSTACK_0_MAC.input();
     }
   }
+  /* TODO handle status acknowledge for transmitted frames */
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(gmac_driver_process, ev, data)
