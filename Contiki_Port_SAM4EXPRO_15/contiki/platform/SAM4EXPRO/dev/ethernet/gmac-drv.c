@@ -240,16 +240,16 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
   PRINTF("gmac_drv: TX[%u]\n", packetbuf_totlen());
 
   /* IEEE8023_mac shall currently not maintain a transmit queue. */
-  assert( ptr == NULL);
+  assert(ptr == NULL);
 
   /* Store frame meta-data [receiver MAC address] */
   cpu_irq_enter_critical();
   p_tx_pkt = (gmac_drv_tx_pending_element_t *)memb_alloc(&gmac_drv_tx_pending_mem);
   cpu_irq_leave_critical();
   if (p_tx_pkt == NULL) {
-    PRINTF("gmac-drv: outgoing TX queue full\n");
+    PRINTF("gmac-drv: outgoing TX queue limit reached\n");
     mac_status = MAC_TX_ERR_FATAL;
-	 goto err_exit;
+    goto err_exit;
   }
   p_tx_pkt->next = NULL;
   p_tx_pkt->status.is_acked = 0;
@@ -261,7 +261,7 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
     case GMAC_OK:
       /* All OK. */
       /* Add pending TX frame to list */
-		list_add(gmac_drv_tx_pending_list, p_tx_pkt);
+      list_add(gmac_drv_tx_pending_list, p_tx_pkt);
       break;
     case GMAC_TX_BUSY:
       mac_status = MAC_TX_ERR;
