@@ -13,7 +13,7 @@
 #include "dev/ethernet.h"
 
 #ifdef AUTOSTART_ENABLE
-#define AUTOSTART_ENABLE											1
+#define AUTOSTART_ENABLE                                 1
 #endif /* AUTOSTART_ENABLE */
 
 #ifndef WITH_SERIAL_DEBUG
@@ -26,14 +26,14 @@
 
 #define PROCESS_CONF_NO_PROCESS_NAMES                    0
 
-/* Netstack_0 & 802.3 config [Interface 0] */
+/* Netstack_0 & IEEE802.3 configuration [Interface 0] */
 #ifdef ETHERNETSTACK_CONF_WITH_ETHERNET
 #define WITH_ETHERNET_SUPPORT                            1
-#define ETHERNET_CONF_STACK										ETHERNET_DEV_DRIVER
-#define NETSTACK_0_CONF_MAC										ieee8023_mac_driver
-#define NETSTACK_0_CONF_FRAMER									ieee8023_framer
+#define ETHERNET_CONF_STACK                              ETHERNET_DEV_DRIVER
+#define NETSTACK_0_CONF_MAC                              ieee8023_mac_driver
+#define NETSTACK_0_CONF_FRAMER                           ieee8023_framer
 
-/* Handlig of 802.3 frames requires a larger packet buffer */
+/* Handling of 802.3 frames requires a larger packet buffer */
 #ifdef PACKETBUF_CONF_SIZE
 #undef PACKETBUF_CONF_SIZE
 #endif

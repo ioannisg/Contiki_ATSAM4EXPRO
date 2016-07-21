@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include "sysclk.h"
 #include "gpbr.h"
+#include "conf_eth.h"
 
 typedef unsigned long clock_time_t;
 

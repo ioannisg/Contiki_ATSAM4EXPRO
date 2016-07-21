@@ -68,7 +68,7 @@ gmac_dev_tx_callback(uint32_t status)
   }
   else
   {
-    PRINTF("gmac-drv: tx-err:%lu\n", status);
+    PRINTF("gmac-drv: tx-comp-err:%lu\n", status);
     gmac_drv_device.stats.tx_err++;
     if (GMAC_TSR_RLE == status)
     {
@@ -243,11 +243,9 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
   assert(ptr == NULL);
 
   /* Store frame meta-data [receiver MAC address] */
-  cpu_irq_enter_critical();
   p_tx_pkt = (gmac_drv_tx_pending_element_t *)memb_alloc(&gmac_drv_tx_pending_mem);
-  cpu_irq_leave_critical();
   if (p_tx_pkt == NULL) {
-    PRINTF("gmac-drv: outgoing TX queue limit reached\n");
+    PRINTF("gmac-drv: outgoing TX queue limit reached; dropping frame.\n");
     mac_status = MAC_TX_ERR_FATAL;
     goto err_exit;
   }
@@ -280,6 +278,7 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
     memb_free(&gmac_drv_tx_pending_mem, p_tx_pkt);
     /* Notify NETSTACK */
 err_exit:
+    PRINTF("gmac-drv: tx-err:%u",mac_status);
     mac_call_sent_callback(sent, NULL, mac_status, 1);
   }
 }
