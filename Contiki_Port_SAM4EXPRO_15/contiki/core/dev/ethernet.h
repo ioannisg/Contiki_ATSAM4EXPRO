@@ -41,7 +41,6 @@
 #ifndef ETHERNET_H_
 #define ETHERNET_H_
 
-#include "contiki.h"
 #include "net/linkaddr6.h"
 #include "net/mac/mac.h"
 

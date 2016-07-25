@@ -12,7 +12,7 @@
 #include "net/mac/mac-sequence.h"
 #include "mini_ip.h"
 
-#ifdef WITH_ETHERNET_SUPPORT
+#if WITH_ETHERNET_SUPPORT
 
 #if NETSTACK_CONF_WITH_IP64
 #include "ip64.h"

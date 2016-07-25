@@ -113,6 +113,7 @@
 #include <string.h>
 #include "mini_ip.h"
 #include "conf_eth.h"
+#include "dev/watchdog.h"
 
 /// @cond 0
 /**INDENT-OFF**/
@@ -421,6 +422,12 @@ void GMAC_Handler(void)
 #endif
 }
 
+/** Reset type of chip. */
+#define GENERAL_RESET          (0x00 << RSTC_SR_RSTTYP_Pos)
+#define BACKUP_RESET           (0x01 << RSTC_SR_RSTTYP_Pos)
+#define WDT_RESET              (0x02 << RSTC_SR_RSTTYP_Pos)
+#define SOFTWARE_RESET         (0x03 << RSTC_SR_RSTTYP_Pos)
+#define USER_RESET             (0x04 << RSTC_SR_RSTTYP_Pos)
 /**
  *  \brief GMAC example entry point.
  *
@@ -441,6 +448,30 @@ int main(void)
 
 	puts(STRING_HEADER);
 
+	switch(rstc_get_reset_cause(RSTC))
+	{
+		case GENERAL_RESET:
+		  printf("main: general reset\n");
+		  break;
+		case BACKUP_RESET:
+		  printf("main: backup reset\n");
+		  break;
+		case WDT_RESET:
+		  printf("main: watchdog_reset\n");
+		  break;
+		case SOFTWARE_RESET:
+		  printf("main: software reset\n\n");
+		  break;
+		case USER_RESET:
+		  printf("main: user reset\n");
+		  break;
+		default:
+        puts("main: rstc cause error:\n");
+		  break;
+	}
+	
+	watchdog_init();
+	watchdog_start();
 	/* Display MAC & IP settings */
 	printf("-- MAC %x:%x:%x:%x:%x:%x\n\r",
 			gs_uc_mac_address[0], gs_uc_mac_address[1], gs_uc_mac_address[2],

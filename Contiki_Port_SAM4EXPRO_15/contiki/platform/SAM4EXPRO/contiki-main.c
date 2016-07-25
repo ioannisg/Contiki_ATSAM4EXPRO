@@ -7,11 +7,12 @@
 #include "contiki.h"
 #include "dev\watchdog.h"
 #include "dev\ethernetstack.h"
+#include "net\netstack_x.h"
 #include "uart0.h"
 #include "conf_uart_serial.h"
 
 
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG
 #include <stdio.h>
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -19,7 +20,20 @@
 #define PRINTF(...)
 #endif
 
-
+/*---------------------------------------------------------------------------*/
+#if !PROCESS_CONF_NO_PROCESS_NAMES
+static void
+print_processes(struct process * const processes[])
+{
+  /*  const struct process * const * p = processes;*/
+  PRINTF("Starting");
+  while(*processes != NULL) {
+    PRINTF(" '%s'", (*processes)->name);
+    processes++;
+  }
+  putchar('\n');
+}
+#endif /* !PROCESS_CONF_NO_PROCESS_NAMES */
 /*---------------------------------------------------------------------------*/
 static void
 hw_init(void)
@@ -67,17 +81,22 @@ main(void)
   /* Initialize the rtimer library */
   rtimer_init();
 
-#ifdef ETHERNETSTACK_CONF_WITH_ETHERNET
+#ifdef WITH_ETHERNET_SUPPORT
+  /* Initialize Ethernet interface */
   ethernetstack_init();
+  /* Initialize NETSTACK [interface 0] */
+  netstack_0_init();
 #endif
-
-  /* Initialize networking TODO netstack_init() */
 
   /* Initialize watch-dog timer */
   watchdog_start();
 
   /* Start all auto-start processes. */
   autostart_start(autostart_processes);
+
+#if !PROCESS_CONF_NO_PROCESS_NAMES
+  print_processes(autostart_processes);
+#endif
 
   while(1) {
     /* Reset watchdog. */

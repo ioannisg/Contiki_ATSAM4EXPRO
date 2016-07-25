@@ -52,6 +52,11 @@ typedef uint64_t rtimer_clock_t;
 #define UART_CONF_IRQ_PRIORITY               4
 
 /*------------------------ Link Interface Settings. -------------------------*/
-#define ETHERNETSTACK_CONF_WITH_ETHERNET
-#define ETHERNET_CONF_STACK                  gmac_driver
+
+/*------------------------ Ethernet Interface Settings. ---------------------*/
+#define WITH_ETHERNET_SUPPORT                1 /* Move to Makefile */
+#define ETHERNET_CONF_MAX_FRAME_LEN          1536
+#define ETHERNET_DEV_DRIVER                  gmac_driver
+
 #endif /* PLATFORM-CONF_H_ */
+

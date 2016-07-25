@@ -20,7 +20,7 @@
 
 #include <string.h>
 
-#ifdef WITH_ETHERNET_SUPPORT
+#if WITH_ETHERNET_SUPPORT
 
 #define DEBUG 1
 #if DEBUG
@@ -101,7 +101,7 @@ gmac_dev_tx_callback(uint32_t status)
     }
     p_pending_pkt = p_pending_pkt->next;
   }
-  assert(not_found);
+  assert(not_found == 0);
   /* Set state to pending */
   gmac_drv_device.state |= GMAC_DRV_STATE_PENDING_TX;
   process_poll(&gmac_driver_process);
@@ -251,6 +251,7 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
   }
   p_tx_pkt->next = NULL;
   p_tx_pkt->status.is_acked = 0;
+  p_tx_pkt->cb = sent;
   linkaddr6_copy(&p_tx_pkt->addr, (const linkaddr6_t *)packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
 
   /* Enqueue the frame for transmission. Submit the callback function. */
@@ -333,7 +334,60 @@ gmac_driver_pollhandler(void)
       NETSTACK_0_MAC.input();
     }
   }
-  /* TODO handle status acknowledge for transmitted frames */
+  if (gmac_drv_device.state & GMAC_DRV_STATE_PENDING_TX)
+  {
+    /* TX complete event occurred */
+    /* This loop will invoke the NETSTACK_MAC callback for all the packets
+     * whose transmission has completed. So it is safe to clear the pending
+     * flag and the poll signal if no other polling reason is waiting.
+     */
+    gmac_drv_device.state &= ~(GMAC_DRV_STATE_PENDING_TX);
+    cpu_irq_enter_critical();
+    if ((gmac_drv_device.state & (GMAC_DRV_STATE_PENDING_RX | GMAC_DRV_STATE_PENDING_TX)) == 0)
+    {
+      /* Remove process poll if registered */
+      gmac_driver_process.needspoll = 0;
+    }
+    cpu_irq_leave_critical();
+    /* Run over the list elements. If status is present, remove
+     * element from list and invoke callback.
+     */
+    gmac_drv_tx_pending_element_t *p_pending_pkt = list_head(gmac_drv_tx_pending_list);
+    assert(p_pending_pkt != NULL);
+    uint8_t not_found = 1;
+    while(p_pending_pkt != NULL) {
+      if (!p_pending_pkt->status.is_acked)
+      {
+        break;
+	   }
+      not_found = 0;
+      /* Invoke callback */
+      assert(p_pending_pkt->cb != NULL);
+      int tx_status = MAC_TX_OK;
+      switch(p_pending_pkt->status.status)
+      {
+        case GMAC_TSR_TXCOMP:
+          tx_status = MAC_TX_OK;
+          break;
+        case GMAC_TSR_RLE:
+          tx_status = MAC_TX_ERR_FATAL;
+          break;
+        case GMAC_TSR_COL:
+        case GMAC_TSR_UND:
+          tx_status = MAC_TX_ERR;
+          break;
+        default:
+          assert(0);
+          break;
+      }
+      mac_call_sent_callback(p_pending_pkt->cb, NULL, tx_status, 1);
+      /* Free */
+		memb_free(&gmac_drv_tx_pending_mem, p_pending_pkt);
+		list_pop(gmac_drv_tx_pending_list);
+      p_pending_pkt = p_pending_pkt->next;
+    }
+    assert(not_found == 0);
+  }
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(gmac_driver_process, ev, data)
@@ -345,27 +399,27 @@ PROCESS_THREAD(gmac_driver_process, ev, data)
 
   PROCESS_BEGIN();
 
-  PRINTF("GMAC_driver process\n");
+  PRINTF("gmac-drv: starting\n");
   /* Allow for other initialization to take place */
   PROCESS_PAUSE();
  
   /* Set link layer address for Contiki NETSTACK */
   linkaddr6_set_node_addr(gmac_driver_get_mac_address());
   
-  /* Flush Ethernet device and set RX callback function. */
+  /* Flush Ethernet device */
   while(1)
   {
     uint32_t bytes_received;
-    uint32_t recv_array[ETHERNET_MAX_FRAME_LEN];
-    uint32_t status = gmac_dev_read(&gs_gmac_dev, (uint8_t *)&recv_array[0], ETHERNET_MAX_FRAME_LEN, &bytes_received);
+    uint32_t status = gmac_dev_read(&gs_gmac_dev, (uint8_t *)packetbuf_dataptr(), ETHERNET_MAX_FRAME_LEN, &bytes_received);
     if (status != GMAC_OK)
     {
       break;
     }
   }
+  /*Set RX callback function for receiving frames */
   gmac_dev_set_rx_callback(&gs_gmac_dev, gmac_dev_rx_callback);
 
-  /* Enter IDLE state */
+  /* SWitch to IDLE state */
   gmac_drv_device.state = GMAC_DRV_STATE_IDLE;
 
   /* Notify Contiki network stack that Ethernet interface is up. */
@@ -385,7 +439,7 @@ PROCESS_THREAD(gmac_driver_process, ev, data)
   assert(gmac_drv_device.state != GMAC_DRV_STATE_NOT_INITIALIZED);
   gmac_drv_device.state = GMAC_DRV_STATE_NOT_INITIALIZED;
   
-  PRINTF("GMAC_driver: exiting\n");
+  PRINTF("gmac-drv: exiting\n");
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/

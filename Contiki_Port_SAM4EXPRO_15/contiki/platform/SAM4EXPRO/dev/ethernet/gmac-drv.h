@@ -37,6 +37,7 @@ typedef struct {
 struct gmac_drv_tx_pending_element {
   struct gmac_drv_tx_pending_element *next;
   linkaddr6_t addr;
+  mac_callback_t cb;
   struct {
     uint8_t is_acked;
     uint32_t status;
