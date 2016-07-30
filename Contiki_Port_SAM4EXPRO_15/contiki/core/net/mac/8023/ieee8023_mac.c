@@ -57,8 +57,10 @@ send_packet(mac_callback_t sent, void *ptr)
     mac_call_sent_callback(sent, NULL, MAC_TX_ERR_FATAL, 0);
     return;
   }
-  //switch(ETHERNET_STACK.tx_packet(NULL, NULL)) {//FIXME XXX
-  switch(1) {
+  /* Transmit packet to the Ethernet driver, passing the mac_sent_callback. */
+  ETHERNET_STACK.tx_packet(sent, NULL);
+#if 0
+  switch(ETHERNET_STACK.tx_packet(NULL, NULL)) {
   case ETHERNET_TX_OK:
     mac_call_sent_callback(sent, NULL, MAC_TX_OK, 1);
     break;
@@ -75,6 +77,7 @@ send_packet(mac_callback_t sent, void *ptr)
     PRINTF("ieee8023_mac: unrecognized ETH return status\n");
     break;
   }
+#endif
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -155,7 +158,7 @@ static void
 connect_event(uint8_t up)
 {
   PRINTF("IEEE8023_mac: connect: %u\n", up);
-  //NETSTACK_0_NETWORK.connect_event(up);
+  NETSTACK_0_NETWORK.connect_event(up);
 }
 /*---------------------------------------------------------------------------*/
 const struct mac_driver ieee8023_mac_driver = {

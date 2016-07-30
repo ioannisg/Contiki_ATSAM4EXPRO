@@ -22,7 +22,7 @@
 
 #if WITH_ETHERNET_SUPPORT
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
 #include <stdio.h>
 #define PRINTF(...) printf(__VA_ARGS__)
@@ -84,7 +84,7 @@ gmac_dev_tx_callback(uint32_t status)
       assert(0);
     }
   }
-  /* Set the next ACKED packet status. This callback is invoked for each
+  /* Set the next ACKED packet status. This callback is invoked for EACH
    * packet, whose transmission is completed. So it is safe to go through
    * the pending packets in the list and to acknowledge the first in line.
    */
@@ -96,7 +96,7 @@ gmac_dev_tx_callback(uint32_t status)
     {
       p_pending_pkt->status.is_acked = 1;
       p_pending_pkt->status.status = status;
-		not_found = 0;
+      not_found = 0;
       break;
     }
     p_pending_pkt = p_pending_pkt->next;
@@ -145,6 +145,19 @@ gmac_dev_rx_callback(uint32_t status)
 void GMAC_Handler(void)
 {
   gmac_handler(&gs_gmac_dev);
+}
+/*---------------------------------------------------------------------------*/
+static void
+gmac_driver_set_mac_address(linkaddr6_t *p_mac_addr)
+{
+	gmac_set_address(GMAC, 0, &p_mac_addr->u8[0]);
+	linkaddr6_copy((linkaddr6_t *)&gs_uc_mac_address[0], p_mac_addr);
+}
+/*---------------------------------------------------------------------------*/
+static linkaddr6_t*
+gmac_driver_get_mac_address(void)
+{
+	return (linkaddr6_t *)&gs_uc_mac_address[0];
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -203,6 +216,9 @@ gmac_driver_init(void)
   /* Enable big frames */
   gmac_enable_big_frame(GMAC, 0);
 
+  /* Set link layer address for Contiki NETSTACK */
+  linkaddr6_set_node_addr(gmac_driver_get_mac_address());
+
   /* Start driver process */
   process_start(&gmac_driver_process, NULL);
 }
@@ -211,19 +227,6 @@ static void
 gmac_driver_reset(void)
 {
   /* TODO Reset the Ethernet device */
-}
-/*---------------------------------------------------------------------------*/
-static void
-gmac_driver_set_mac_address(linkaddr6_t *p_mac_addr)
-{
-  gmac_set_address(GMAC, 0, &p_mac_addr->u8[0]);
-  linkaddr6_copy((linkaddr6_t *)&gs_uc_mac_address[0], p_mac_addr);
-}
-/*---------------------------------------------------------------------------*/
-static linkaddr6_t*
-gmac_driver_get_mac_address(void)
-{
-  return (linkaddr6_t *)&gs_uc_mac_address[0];
 }
 /*---------------------------------------------------------------------------*/
 static uint8_t
@@ -259,7 +262,7 @@ gmac_driver_tx(mac_callback_t sent, void *ptr)
   {
     case GMAC_OK:
       /* All OK. */
-      /* Add pending TX frame to list */
+      /* Add pending TX frame to the end of the list */
       list_add(gmac_drv_tx_pending_list, p_tx_pkt);
       break;
     case GMAC_TX_BUSY:
@@ -368,6 +371,7 @@ gmac_driver_pollhandler(void)
       {
         case GMAC_TSR_TXCOMP:
           tx_status = MAC_TX_OK;
+          PRINTF("gmac-drv: TX-comp\n");
           break;
         case GMAC_TSR_RLE:
           tx_status = MAC_TX_ERR_FATAL;
@@ -402,9 +406,6 @@ PROCESS_THREAD(gmac_driver_process, ev, data)
   PRINTF("gmac-drv: starting\n");
   /* Allow for other initialization to take place */
   PROCESS_PAUSE();
- 
-  /* Set link layer address for Contiki NETSTACK */
-  linkaddr6_set_node_addr(gmac_driver_get_mac_address());
   
   /* Flush Ethernet device */
   while(1)
@@ -451,7 +452,7 @@ const struct eth_driver gmac_driver = {
   gmac_driver_get_mac_address,
   gmac_driver_tx,
   gmac_driver_is_initialized,
-  NULL,
+  gmac_driver_is_initialized,
   NULL,
   NULL,
 };

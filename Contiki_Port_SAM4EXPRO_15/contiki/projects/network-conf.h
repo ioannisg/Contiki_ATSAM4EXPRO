@@ -36,6 +36,14 @@
 #define ETHERNET_NODE_SUPPORT                                  0
 #endif /* CONTIKI_WITH_ETH_NODE_SUPPORT */
 
+#ifdef CONTIKI_WITH_ETH_ROUTER_SUPPORT
+#define ETHERNET_ROUTER_SUPPORT                                1
+#define PROJECT_NET_CONF_H "projects/ethernet-router/project-conf.h"
+#define NET_PROC_H "projects/ethernet-router/ethernet-router.h"
+#define NET_PROC ethernet_router_process
+#else
+#define ETHERNET_ROUTER_SUPPORT                                0
+#endif /* CONTIKI_WITH_ETH_ROUTER_SUPPORT */
 
 
 #endif /* NETWORK_CONF_H_ */

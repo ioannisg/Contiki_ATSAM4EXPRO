@@ -5,12 +5,13 @@
  *  Author: Ioannis Glaropoulos <ioannisg@kth.se>
  */ 
 #include "contiki.h"
+#include "process.h"
 
 
 #ifndef ETH_NODE_H_
 #define ETH_NODE_H_
 
 
-PROCESS_NAME(eth_ipv6_test_process);
+PROCESS_NAME(ethernet_node_process);
 
 #endif /* ETH_NODE_H_ */

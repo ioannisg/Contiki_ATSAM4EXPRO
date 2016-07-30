@@ -106,7 +106,6 @@
 /* The following flags shall be in the Makefile if we use the default Contiki
  * build system. For Atmel Studio, we define them in contiki-conf.h.
  */
-#define NETSTACK_CONF_WITH_IPV6                          1
 #define NETSTACK_CONF_WITH_RIME                          1 /* For compilation only */
 #define NETSTACK_CONF_WITH_IP64                          0
 #define NETSTACK_CONF_WITH_RIPNG                         0
