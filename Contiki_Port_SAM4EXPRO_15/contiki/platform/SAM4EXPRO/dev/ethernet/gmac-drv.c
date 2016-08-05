@@ -302,13 +302,13 @@ gmac_driver_pollhandler(void)
      * will be processed before return, so it is safe to clear the state indicator now.
      */
     gmac_drv_device.state &= ~(GMAC_DRV_STATE_PENDING_RX);
-    cpu_irq_enter_critical();
+    INTERRUPT_DISABLE(GMAC_IRQn);
     if ((gmac_drv_device.state & (GMAC_DRV_STATE_PENDING_RX | GMAC_DRV_STATE_PENDING_TX)) == 0)
     {
       /* Remove process poll if registered */
       gmac_driver_process.needspoll = 0;
     }
-    cpu_irq_leave_critical();
+    INTERRUPT_ENABLE(GMAC_IRQn);
 
     while(1)
     {
@@ -345,13 +345,13 @@ gmac_driver_pollhandler(void)
      * flag and the poll signal if no other polling reason is waiting.
      */
     gmac_drv_device.state &= ~(GMAC_DRV_STATE_PENDING_TX);
-    cpu_irq_enter_critical();
+    INTERRUPT_DISABLE(GMAC_IRQn);
     if ((gmac_drv_device.state & (GMAC_DRV_STATE_PENDING_RX | GMAC_DRV_STATE_PENDING_TX)) == 0)
     {
       /* Remove process poll if registered */
       gmac_driver_process.needspoll = 0;
     }
-    cpu_irq_leave_critical();
+    INTERRUPT_ENABLE(GMAC_IRQn);
     /* Run over the list elements. If status is present, remove
      * element from list and invoke callback.
      */

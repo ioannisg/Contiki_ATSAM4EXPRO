@@ -116,6 +116,7 @@
 /* TCP if CoAP is needed. Set in Makefile for CoAP support. */
 #if (WITH_COAP==7) || (WITH_COAP==6) || (WITH_COAP==3)
 #define UIP_CONF_TCP													0
+#define REST coap_rest_implementation
 #else
 #define UIP_CONF_TCP													1
 #endif /* WITH_COAP */
@@ -226,6 +227,30 @@
 #ifdef PROJECT_NET_CONF_H
 #include PROJECT_NET_CONF_H
 #endif
+
+/* ----- Macros for atomic operations -------*/
+#define INTERRUPTS_DISABLE()					               cpu_irq_enter_critical()
+#define INTERRUPTS_ENABLE()					               cpu_irq_leave_critical()
+#define INTERRUPT_DISABLE(irq_id)			               NVIC_DisableIRQ(irq_id)
+#define INTERRUPT_ENABLE(irq_id)				               NVIC_EnableIRQ(irq_id)
+
+#if COFFEE == 1
+#define CONTIKI_FLASH_BANKS_NUM                          4
+#define CONTIKI_FLASH_SIZE_BANK0                         (IFLASH_SIZE)/(CONTIKI_FLASH_BANKS_NUM)
+#define CONTIKI_FLASH_SIZE_BANK1                         (IFLASH_SIZE)/(CONTIKI_FLASH_BANKS_NUM)
+#define CONTIKI_FLASH_SIZE_BANK2                         (IFLASH_SIZE)/(CONTIKI_FLASH_BANKS_NUM)
+#define CONTIKI_FLASH_SIZE_BANK3                         (IFLASH_SIZE)/(CONTIKI_FLASH_BANKS_NUM)
+
+#define CONTIKI_FLASH_ADDR_BANK0                         IFLASH_ADDR
+#define CONTIKI_FLASH_ADDR_BANK1                         CONTIKI_FLASH_ADDR_BANK0 + CONTIKI_FLASH_SIZE_BANK0
+#define CONTIKI_FLASH_ADDR_BANK2                         CONTIKI_FLASH_ADDR_BANK1 + CONTIKI_FLASH_SIZE_BANK1
+#define CONTIKI_FLASH_ADDR_BANK3                         CONTIKI_FLASH_ADDR_BANK2 + CONTIKI_FLASH_SIZE_BANK2
+
+
+#ifndef COFFEE_ADDRESS
+#define COFFEE_ADDRESS                                   CONTIKI_FLASH_ADDR_BANK2
+#endif /* COFFEE_ADDRESS */
+#endif /* COFFEE == 1 */
 
 /* Include project-specific configuration, if present */
 #ifdef PROJECT_CONF_H

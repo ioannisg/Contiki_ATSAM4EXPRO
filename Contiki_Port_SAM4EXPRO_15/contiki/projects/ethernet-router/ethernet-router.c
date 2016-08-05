@@ -9,6 +9,7 @@
 #include "ipv6/uip-ds6.h"
 #include "uip6-rio.h"
 #include "resolv.h"
+#include "apps/net-monitor/net-monitor.h"
 
 #define DEBUG DEBUG_PRINT
 #include "net/ip/uip-debug.h"
@@ -93,7 +94,7 @@ PROCESS_THREAD(ethernet_router_process, ev, data)
   PROCESS_PAUSE();
 
   /* Start the network configuration & monitor process */
-  //process_start(&net_monitor_process, NULL);
+  process_start(&net_monitor_process, NULL);
   /* Start mDNS */
   process_start(&resolv_process, NULL);
   /* Start test COAP client */
