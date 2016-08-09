@@ -150,8 +150,9 @@ void GMAC_Handler(void)
 static void
 gmac_driver_set_mac_address(linkaddr6_t *p_mac_addr)
 {
-	gmac_set_address(GMAC, 0, &p_mac_addr->u8[0]);
-	linkaddr6_copy((linkaddr6_t *)&gs_uc_mac_address[0], p_mac_addr);
+  assert(p_mac_addr != NULL);
+  gmac_set_address(GMAC, 0, &p_mac_addr->u8[0]);
+  linkaddr6_copy((linkaddr6_t *)&gs_uc_mac_address[0], p_mac_addr);
 }
 /*---------------------------------------------------------------------------*/
 static linkaddr6_t*
@@ -163,7 +164,8 @@ gmac_driver_get_mac_address(void)
 static void
 gmac_driver_init(void)
 {
-  assert(gmac_drv_device.state == GMAC_DRV_STATE_NOT_INITIALIZED);
+  assert((gmac_drv_device.state == GMAC_DRV_STATE_NOT_INITIALIZED) &&
+    (process_is_running(&gmac_driver_process) == 0));
 
   /* Initialize driver TX pending list */
   list_init(gmac_drv_tx_pending_list);
@@ -189,7 +191,7 @@ gmac_driver_init(void)
   gmac_dev_init(GMAC, &gs_gmac_dev, &m_gmac_option);
 
   /* Enable Interrupt */
-  NVIC_EnableIRQ(GMAC_IRQn);
+  INTERRUPT_ENABLE(GMAC_IRQn);
 
   /* Init MAC PHY driver */
   if (ethernet_phy_init(GMAC, BOARD_GMAC_PHY_ADDR, sysclk_get_cpu_hz())
@@ -285,6 +287,19 @@ err_exit:
     PRINTF("gmac-drv: tx-err:%u",mac_status);
     mac_call_sent_callback(sent, NULL, mac_status, 1);
   }
+}
+/*---------------------------------------------------------------------------*/
+static uint8_t
+gmac_driver_exit(uint8_t keep_resources)
+{
+  UNUSED(keep_resources);
+
+  assert(!(GMAC_DRV_STATE_NOT_INITIALIZED & gmac_drv_device.state));
+
+  assert(PROCESS_ERR_OK ==
+    process_post(&gmac_driver_process, PROCESS_EVENT_EXIT, NULL));
+
+  return 1;
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -432,7 +447,11 @@ PROCESS_THREAD(gmac_driver_process, ev, data)
     PROCESS_WAIT_EVENT();
     if (PROCESS_EVENT_EXIT == ev)
     {
-      /* Process is asked to terminate TODO turn off device */
+      /* Process is asked to terminate */
+      PRINTF("gmac-drv: exiting\n");
+      /* Disable GMAC interrupts */
+      INTERRUPT_DISABLE(GMAC_IRQn);
+      /* TODO Clear structures and disable device */
       break;
     }
   }
@@ -440,7 +459,9 @@ PROCESS_THREAD(gmac_driver_process, ev, data)
   assert(gmac_drv_device.state != GMAC_DRV_STATE_NOT_INITIALIZED);
   gmac_drv_device.state = GMAC_DRV_STATE_NOT_INITIALIZED;
   
-  PRINTF("gmac-drv: exiting\n");
+  /* Notify Contiki network stack that Ethernet interface is down. */
+  NETSTACK_0_MAC.connect_event(0);
+
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
@@ -454,7 +475,7 @@ const struct eth_driver gmac_driver = {
   gmac_driver_is_initialized,
   gmac_driver_is_initialized,
   NULL,
-  NULL,
+  gmac_driver_exit,
 };
 /*---------------------------------------------------------------------------*/
 #endif /* WITH_ETHERNET_SUPPORT */
