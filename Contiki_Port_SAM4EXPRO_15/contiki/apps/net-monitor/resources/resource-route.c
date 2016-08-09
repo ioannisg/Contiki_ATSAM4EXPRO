@@ -23,8 +23,10 @@
 #define SPRINT6ADDR(addr)
 #endif
 
+#define RESOURCE_ROUTE_MAX_ROUTES          (8)
+#define RESOURCE_ROUTE_MAX_ROUTE_ENTRY_LEN (32)
 /*---------------------------------------------------------------------------*/
-static char routing_table[2*REST_MAX_CHUNK_SIZE];
+static char routing_table[REST_MAX_CHUNK_SIZE + RESOURCE_ROUTE_MAX_ROUTE_ENTRY_LEN];
 static uint16_t rsp_length = 0;
 /*---------------------------------------------------------------------------*/
 static uint16_t
@@ -36,7 +38,7 @@ sprint_routes(char *msg)
     goto check_dft;
   }
   
-  if (uip_ds6_route_num_routes() > 8) {
+  if (uip_ds6_route_num_routes() > RESOURCE_ROUTE_MAX_ROUTES) {
     sprintf(msg+strlen(msg), "Total routes:%u\n", uip_ds6_route_num_routes());
     goto check_dft;
   }
@@ -82,9 +84,8 @@ res_get_handler(void *request, void *response, uint8_t *buffer,
   uint16_t preferred_size, int32_t *offset)
 {
   const char *len = NULL;
-  char message[2*REST_MAX_CHUNK_SIZE];
-  memset(message, 0, REST_MAX_CHUNK_SIZE);
-  int length = sprint_routes(message);
+  memset(routing_table, 0, sizeof(routing_table));
+  int length = sprint_routes(&routing_table[0]);
 
   /* The query string can be retrieved by rest_get_query() or parsed for its key-value pairs. */
   if(REST.get_query_variable(request, "len", &len)) {
@@ -95,10 +96,10 @@ res_get_handler(void *request, void *response, uint8_t *buffer,
     if(length > REST_MAX_CHUNK_SIZE) {
       length = REST_MAX_CHUNK_SIZE;
     }
-    memcpy(buffer, message, length);
+    memcpy(buffer, &routing_table[0], length);
   } else {
     length = (length > REST_MAX_CHUNK_SIZE) ? REST_MAX_CHUNK_SIZE : length;
-    memcpy(buffer, message, length);
+    memcpy(buffer, &routing_table[0], length);
   }
   REST.set_header_content_type(response, REST.type.TEXT_PLAIN); /* text/plain is the default, hence this option could be omitted. */
   REST.set_header_etag(response, (uint8_t *)&length, 1);
