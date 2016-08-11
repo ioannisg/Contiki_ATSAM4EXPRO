@@ -330,7 +330,7 @@ gmac_driver_pollhandler(void)
       watchdog_periodic();
       /* Clear packet buffer contents */
       packetbuf_clear();
-      /* packet buffer mush have sufficient size to accommodate the received frame */
+      /* packet buffer must have sufficient size to accommodate the received frame */
       rx_status = gmac_dev_read(&gs_gmac_dev, (uint8_t *)packetbuf_dataptr(), ETHERNET_MAX_FRAME_LEN, &rx_len);
       if (rx_status != GMAC_OK)
       {
